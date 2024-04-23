@@ -167,7 +167,7 @@ class Inscripciones:
                 cmbx = getcmbx()
                 #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
                 eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, seleccionLinea()[0]))
-                con.commit() #Confirma la eliminación.
+                conexion.commit() #Confirma la eliminación.
                 actualizar("call") #Refresca el treeview.
 
         self.cmbx_Id_Alumno.configure(values = valsCmbx) #Se colocan todas las opciones del combobox(los id_alumnos).
@@ -182,8 +182,8 @@ class Inscripciones:
      para el manejo de la base de datos '''
 
 seleccion = []
-con = sqlite3.connect("database.db")
-cur = con.cursor()
+conexion = sqlite3.connect("database.db")
+cur = conexion.cursor()
 valsCmbx = cur.execute("SELECT Id_Alumno FROM Alumnos").fetchall() #Opciones del Combobox
 
 
