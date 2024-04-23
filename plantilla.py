@@ -4,15 +4,20 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
 import tkinter.messagebox as msgb
+from pathlib import Path
 
+PATH = str((Path(__file__).resolve()).parent)
 
+ICON=r"/imagen/ed.ico"
+BD= r"/BD/database.db"
 class Inscripciones:
     def __init__(self, master=None):
         # Vewntan principal
-        self.db_name = 'Inscripciones.db'    
+        self.db_name = PATH + BD   
         self.win = tk.Tk(master)
         self.win.configure(background="#f7f9fd", height=600, width=800)
         self.win.geometry("800x600")
+        self.win.iconbitmap(PATH +ICON)
         self.win.resizable(False, False)
         self.win.title("Inscripciones de Materias y Cursos")
         # Crea los frames
@@ -182,7 +187,7 @@ class Inscripciones:
      para el manejo de la base de datos '''
 
 seleccion = []
-conexion = sqlite3.connect("database.db")
+conexion = sqlite3.connect(PATH + BD)
 cur = conexion.cursor()
 valsCmbx = cur.execute("SELECT Id_Alumno FROM Alumnos").fetchall() #Opciones del Combobox
 
