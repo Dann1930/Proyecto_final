@@ -88,25 +88,21 @@ class Inscripciones:
 
         ''' Treeview de la Aplicación'''
         #Treeview
-        self.tView = ttk.Treeview(self.frm_1, name="tview") 
-        self.tView.configure(selectmode="extended")
+        self.tView = ttk.Treeview(self.frm_1, style="estilo.Treeview") 
+        self.tView.configure()
         #Columnas del Treeview
-        self.tView_cols = ['tV_descripción']
-        self.tView_dcols = ['tV_descripción']
-        self.tView.configure(columns=self.tView_cols,displaycolumns=self.tView_dcols)
-        self.tView.column("#0",anchor="w",stretch=True,width=10,minwidth=10)
-        self.tView.column("tV_descripción",anchor="w",stretch=True,width=200,minwidth=50)
+        self.tView["columns"]=("descripcion")
+        self.tView.column ("#0", anchor="w", stretch=True,width=5)
+        self.tView.column ("descripcion", anchor="w", stretch=True,width=100)
         #Cabeceras
-        self.tView.heading("#0", anchor="w", text='Curso')
-        self.tView.heading("tV_descripción", anchor="w", text='Descripción')
-        self.tView.place(anchor="nw", height=300, width=790, x=4, y=280)
+        self.tView.heading("#0", anchor="center", text="Codigo")
+        self.tView.heading("descripcion", anchor="center", text="Descripción")
+
         #Scrollbars
-        self.scroll_H = ttk.Scrollbar(self.tView,name="scroll_h")
-        self.scroll_H.configure(orient="horizontal")
-        self.scroll_H.place(anchor="s", height=12, width=1534, x=15, y=595)
-        self.scroll_Y = ttk.Scrollbar(self.tView, name="scroll_y")
-        self.scroll_Y.configure(orient="vertical")
-        self.scroll_Y.place(anchor="s", height=275, width=12, x=790, y=582)
+        self.scroll_H = ttk.Scrollbar(self.tView, orient="vertical", command=self.tView.yview)
+        self.tView.configure(yscroll=self.scroll_H.set)
+        self.scroll_H.place( height=325, x=778, y=25)
+        self.tView.place(anchor="nw", height=300, width=790, x=4, y=300)
         self.frm_1.pack(side="top")
         self.frm_1.pack_propagate(0)
 
