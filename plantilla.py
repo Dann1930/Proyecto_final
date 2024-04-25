@@ -63,6 +63,26 @@ class Inscripciones:
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
         self.apellidos.place(anchor="nw", width=200, x=485, y=140)
+        #Label Id Curso
+        self.lblIdCurso = ttk.Label(self.frm_1, name="lblidcurso")
+        self.lblIdCurso.configure(background="#f7f9fd", text='Id Curso:')
+        self.lblIdCurso.place(anchor="nw", x=30, y=180)
+        #Entry Id Curso
+        self.idCurso = ttk.Entry(self.frm_1, name="idcurso")
+        self.idCurso.configure(justify="center")
+        self.idCurso.place(anchor="nw", width=200, x=110, y=180)
+        #Combobox Id Curso
+        self.cmbx_Id_Curso = ttk.Combobox(self.frm_1, name="cmbx_id_curso")
+        self.cmbx_Id_Curso.place(anchor="nw", width=200, x=110, y=180)
+        #Label Curso
+        self.lblCurso = ttk.Label(self.frm_1, name="lblcurso")
+        self.lblCurso.configure(background="#f7f9fd", text='Curso:')
+        self.lblCurso.place(anchor="nw", x=400, y=180)
+        #Entry Curso
+        self.curso = ttk.Entry(self.frm_1, name="curso")
+        self.curso.configure(justify="center")
+        self.curso.place(anchor="nw", width=200, x=485, y=180)
+
 
         ''' Botones  de la Aplicación'''
         #Botón Guardar
@@ -126,9 +146,14 @@ class Inscripciones:
             
         def getcmbx(): #Selecciona el id del estudiante destacado en el combobox
             index = self.cmbx_Id_Alumno.current()
-            cmbx = valsCmbx[index][0]
+            cmbx = valsCmbxAl[index][0]
             return cmbx
         
+        def getcmbxCur(): #Selecciona el id del Curso destacado en el combobox
+            index = self.cmbx_Id_Curso.current()
+            cmbxCur = valsCmbxCur[index][0]
+            return cmbxCur
+            
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
             #Refresca el Treeview si hay hay elementos en el Treeview
             if len(self.tView.get_children(""))!= 0:
@@ -144,6 +169,14 @@ class Inscripciones:
             self.nombres.configure(textvariable = self.nombresvar)
             self.apellidosvar = tk.StringVar(value = valsNombreApellidos[1])
             self.apellidos.configure(textvariable=self.apellidosvar)
+       
+            cmbxCur = getcmbxCur()
+            #Curso, Para cambiar el label hay que crear un StringVar
+            valIdCurso = cur.execute("SELECT Descrip_Curso FROM Cursos WHERE Código_Curso =  \"{}\"".format(cmbxCur)).fetchone()
+            self.cursosvar = tk.StringVar(value = valIdCurso[0])
+            self.curso.configure(textvariable = self.cursosvar)
+               
+
 
             #TreeView
             # Hace un INNER JOIN de 3 tabla (Alumnos, Inscritos, Cursos) y selecciona los registros donde el id_alumno coincide con la opcion del combobox
@@ -171,11 +204,12 @@ class Inscripciones:
                 conexion.commit() #Confirma la eliminación.
                 actualizar("call") #Refresca el treeview.
 
-        self.cmbx_Id_Alumno.configure(values = valsCmbx) #Se colocan todas las opciones del combobox(los id_alumnos).
+        self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
         self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".
+        self.cmbx_Id_Curso.configure(values = valsCmbxCur) #Se colocan todas las opciones del combobox(los id_cursos).
+        self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".        
         self.btnEliminar.configure(command = eliminarLinea) #Al presionar el boton, se ejecuta el comando.
-        
-
+   
     def run(self):
         self.mainwindow.mainloop()
 
@@ -185,7 +219,8 @@ class Inscripciones:
 seleccion = []
 conexion = sqlite3.connect(PATH + BD)
 cur = conexion.cursor()
-valsCmbx = cur.execute("SELECT Id_Alumno FROM Alumnos").fetchall() #Opciones del Combobox
+valsCmbxAl = cur.execute("SELECT Id_Alumno FROM Alumnos").fetchall() #Opciones del Combobox Alumno
+valsCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos").fetchall() #Opciones del Combobox Curso
 
 
 if __name__ == "__main__":
