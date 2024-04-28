@@ -12,7 +12,7 @@ ICON=r"/imagen/ed.ico"
 BD= r"/BD/database.db"
 class Inscripciones:
     def __init__(self, master=None):
-        # Vewntan principal
+        # Ventana principal
         self.db_name = PATH + BD   
         self.win = tk.Tk(master)
         self.win.configure(background="#f7f9fd", height=600, width=800)
@@ -27,6 +27,7 @@ class Inscripciones:
         self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 11 {bold}",
                                         justify="left",state="normal",
                                         takefocus=False,text='No.Inscripción')
+        
         #Label No. Inscripción
         self.lblNoInscripcion.place(anchor="nw", x=670, y=20)
         #Entry No. Inscripción
@@ -42,6 +43,7 @@ class Inscripciones:
         self.fecha = ttk.Entry(self.frm_1, name="fecha")
         self.fecha.configure(justify="center")
         self.fecha.place(anchor="nw", width=90, x=680, y=85)
+
         #Label Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#f7f9fd", text='Id Alumno:')
@@ -49,6 +51,7 @@ class Inscripciones:
         #Combobox Alumno
         self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno")
         self.cmbx_Id_Alumno.place(anchor="nw", width=112, x=110, y=85)
+
         #Label Alumno
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
         self.lblNombres.configure(background="#f7f9fd",text='Nombre(s):')
@@ -56,6 +59,7 @@ class Inscripciones:
         #Entry Alumno
         self.nombres = ttk.Entry(self.frm_1, name="nombres")
         self.nombres.place(anchor="nw", width=200, x=110, y=140)
+
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
         self.lblApellidos.configure(background="#f7f9fd",text='Apellido(s):')
@@ -63,6 +67,7 @@ class Inscripciones:
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
         self.apellidos.place(anchor="nw", width=200, x=485, y=140)
+
         #Label Id Curso
         self.lblIdCurso = ttk.Label(self.frm_1, name="lblidcurso")
         self.lblIdCurso.configure(background="#f7f9fd", text='Id Curso:')
@@ -74,6 +79,7 @@ class Inscripciones:
         #Combobox Id Curso
         self.cmbx_Id_Curso = ttk.Combobox(self.frm_1, name="cmbx_id_curso")
         self.cmbx_Id_Curso.place(anchor="nw", width=200, x=110, y=180)
+
         #Label Curso
         self.lblCurso = ttk.Label(self.frm_1, name="lblcurso")
         self.lblCurso.configure(background="#f7f9fd", text='Curso:')
@@ -143,6 +149,11 @@ class Inscripciones:
 
         def mensaje():
              msgb.showerror(title='Dato invalido', message="El Dato no es valido")
+
+        #Toma de la Fecha por medio del insert
+        def getFecha():
+            fecha = self.fecha.get()
+            return fecha
             
         def getcmbx(): #Selecciona el id del estudiante destacado en el combobox
             index = self.cmbx_Id_Alumno.current()
@@ -177,7 +188,6 @@ class Inscripciones:
             self.curso.configure(textvariable = self.cursosvar)
                
 
-
             #TreeView
             # Hace un INNER JOIN de 3 tabla (Alumnos, Inscritos, Cursos) y selecciona los registros donde el id_alumno coincide con la opcion del combobox
             #Retorna una lista de atributos de cada registro y los inserta en el treeview parent = "" 
@@ -193,7 +203,17 @@ class Inscripciones:
             seleccion = list(self.tView.item(linea).values())
             print(seleccion)
             return seleccion # Retorna una lista de los valores del registro.
-    
+        
+        def guardarInscripción(): 
+            #Toma de datos de Combobox e Insert de fecha
+            cmbx = getcmbx()
+            cmbxCur = getcmbxCur()  
+            fecha = getFecha()
+            #Se añade el registro a Inscritos tomando la información de cmbx para idCurso y idAluno.
+            guardar = cur.execute("INSERT INTO Inscritos (\"No.Inscripción\", Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(cmbxCur,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
+            conexion.commit() #Confirma la inscripción.
+            actualizar("call") #Refresca el treeview.
+
         def eliminarLinea():
             if SeleccionVacia(): #Si en la seleccion no hay nada, se retorna pass.
                 pass
@@ -209,6 +229,7 @@ class Inscripciones:
         self.cmbx_Id_Curso.configure(values = valsCmbxCur) #Se colocan todas las opciones del combobox(los id_cursos).
         self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".        
         self.btnEliminar.configure(command = eliminarLinea) #Al presionar el boton, se ejecuta el comando.
+        self.btnGuardar.configure(command=guardarInscripción) # Al presionar boton, se guarda la inscripción en base de datos
    
     def run(self):
         self.mainwindow.mainloop()
