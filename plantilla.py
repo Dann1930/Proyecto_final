@@ -271,7 +271,6 @@ class Inscripciones:
         
         def guardarInscripción(): 
             #Toma de datos de Combobox e Insert de fecha
-            print(getinscripcion())
             cmbx = getcmbx()
             cmbxCur = getcmbxCur()  
             fecha = getFecha()
@@ -310,7 +309,7 @@ conexion = sqlite3.connect(PATH + BD)
 cur = conexion.cursor()
 valsCmbxAl = cur.execute("SELECT Id_Alumno FROM Alumnos").fetchall() #Opciones del Combobox Alumno
 valsCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos").fetchall() #Opciones del Combobox Curso
-valsCmbx_No_Inscripción = cur.execute("SELECT No_Inscripción FROM Inscritos").fetchall() #Opciones del Combobox Curso
+
 
 
 if __name__ == "__main__":
