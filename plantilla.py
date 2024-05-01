@@ -111,6 +111,10 @@ class Inscripciones:
         separator1 = ttk.Separator(self.frm_1)
         separator1.configure(orient="horizontal")
         separator1.place(anchor="nw", width=796, x=2, y=260)
+        #Boton Info
+        self.btnInfo = ttk.Button(self.frm_1, name="btnInfo")
+        self.btnInfo.configure(text='Info')
+        self.btnInfo.place(anchor="nw", x=230, y=82)
 
         ''' Treeview de la Aplicación'''
         #Treeview
