@@ -169,32 +169,47 @@ class Inscripciones:
                 return True
             else:
                 return False
-            
-
-
-        def mensajeError():
-             msgb.showerror(title='Dato invalido', message="El Dato no es valido")
+        def mensajeError(codigo):
+            if codigo == 1: #1 No hay alumno seleccionado en el combobox
+                msgb.showerror(message="Seleccione un alumno.")
+            elif codigo == 2: #Dato invalido
+                msgb.showerror(message="La fecha no es valida.")
+            elif codigo == 3:
+                msgb.showerror(message="Seleccióne un registro.")
+            elif codigo == 4:
+                msgb.showerror(message="Seleccióne un curso.")
+            elif codigo == 5:
+                msgb.showerror(message="El curso seleccionado ya fue añadido.")
+            elif codigo == 6:
+                msgb.showerror(message="El alumno no existe.")
+            elif codigo == 7:
+                msgb.showerror(message="El curso no existe.")
+            else: 
+                msgb.showerror(message="Selección vacia.")
         
         def mensajeInfo(): #Crea una ventana emergente para mostrar la información del alumno.
             cmbx = getcmbx()
             if cmbx == "vacio": #Si el combobox esta vacio, al presionar el boton no dara error
-                return None
-            datosAlumno = cur.execute("SELECT * FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone() #Query de los datos en una lista
-            #print(datosAlumno)
-            info = tk.Toplevel(self.win) #Crea una ventana con master al programa principal
-            info.title("Información del estudiante")
-            #Crea un label con la informacion alineada a la izquierda, en un pack()
-            tk.Label(info, text= "\
-                     Nombre:\t\t{} \n \
-                     Apellidos:\t{} \n \
-                     Id:\t \t {} \n \
-                     Fecha de ingreso:\t{} \n \
-                     Dirección:\t{} \n \
-                     Telefono Celular:\t{} \n \
-                     Telefono Fijo:\t{} \n \
-                     Ciudad:\t \t{} \n \
-                     Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font= 'TkDefaultFont').pack(ipadx=20, pady=10)
-            tk.Button(info, text = "Ok", command = info.quit).pack(pady=10) #Cierra la ventana
+                return mensajeError(1)
+            else:
+                datosAlumno = cur.execute("SELECT * FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone() #Query de los datos en una lista
+                carrera = cur.execute("SELECT Alumnos.id_Carrera, Carreras.Descripción FROM Alumnos INNER JOIN Carreras ON Alumnos.id_Carrera = Carreras.Código_Carrera WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone()
+                #print(datosAlumno)
+                info = tk.Toplevel(self.win) #Crea una ventana con master al programa principal
+                info.title("Información del estudiante")
+                #Crea un label con la informacion alineada a la izquierda, en un pack()
+                tk.Label(info, text= "\
+                        Nombre:\t{} \n \
+                        Apellidos:\t{} \n \
+                        Id:\t \t {} \n \
+                        Carrera: \t {} \n \
+                        Fecha de ingreso:\t{} \n \
+                        Dirección:\t{} \n \
+                        Telefono Celular:\t{} \n \
+                        Telefono Fijo:\t{} \n \
+                        Ciudad:\t \t{} \n \
+                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font= 'TkDefaultFont').pack(ipadx=20, pady=10)
+                tk.Button(info, text = "Ok", command = info.destroy).pack(pady=10) #Cierra la ventana
 
         #Toma de la Fecha por medio del insert
         def getFecha():
@@ -228,6 +243,19 @@ class Inscripciones:
                 n= max_num[0]
                 n=n+1 
             return n
+        def insertarId(arg):
+            valor = self.cmbx_Id_Alumno.get()
+            for id in valsCmbxAl:
+                if valor  in id:
+                    return actualizar("call")
+            return mensajeError(6)
+
+        def insertarIdCurso(arg):
+            valor = self.cmbx_Id_Curso.get()
+            for id in valsCmbxCur:
+                if valor in id:
+                    return actualizar("call")
+            return mensajeError(7)
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
             #Refresca el Treeview si hay hay elementos en el Treeview
@@ -270,23 +298,33 @@ class Inscripciones:
         def seleccionLinea(): #Al seleccionar un registro en el treeview, los valores se guardan en el objeto self.tview.selection(), self.tview.item retorna una lista de los valores
             linea = self.tView.selection()
             seleccion = list(self.tView.item(linea).values())
-            print(seleccion)
             return seleccion # Retorna una lista de los valores del registro.
         
         def guardarInscripción(): 
-            #Toma de datos de Combobox e Insert de fecha
-            cmbx = getcmbx()
-            cmbxCur = getcmbxCur()  
-            fecha = getFecha()
-            num_inscripcion= getinscripcion()
-            #Se añade el registro a Inscritos tomando la información de cmbx para idCurso y idAluno.
-            guardar = cur.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(num_inscripcion,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
-            conexion.commit() #Confirma la inscripción.
-            actualizar("call") #Refresca el treeview.
+            if getcmbx() == "vacio": #Si en la seleccion no hay nada
+                return mensajeError(1)
+            else:
+                #Toma de datos de Combobox e Insert de fecha
+                cmbx = getcmbx()
+                cmbxCur = getcmbxCur()  
+                fecha = getFecha()
+                num_inscripcion= getinscripcion()
+                cursos = cur.execute("SELECT Código_Curso FROM Inscritos where id_Alumno = \"{}\"".format(cmbx)).fetchall()
+                if cmbxCur == "vacio":
+                    return mensajeError(4)
+                for curso in cursos:
+                    if cmbxCur in curso:
+                        return mensajeError(5)
+                #Se añade el registro a Inscritos tomando la información de cmbx para idCurso y idAluno.
+                guardar = cur.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(num_inscripcion,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
+                conexion.commit() #Confirma la inscripción.
+                actualizar("call") #Refresca el treeview.
 
         def eliminarLinea():
-            if SeleccionVacia(): #Si en la seleccion no hay nada, se retorna pass.
-                pass
+            if getcmbx() == "vacio": #Si en la seleccion no hay nada, se retorna pass.
+                return mensajeError(1)
+            elif SeleccionVacia():
+                return mensajeError(3)
             else:
                 cmbx = getcmbx()
                 #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
@@ -301,6 +339,9 @@ class Inscripciones:
         self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".    
         self.btnEliminar.configure(command = eliminarLinea) #Al presionar el boton, se ejecuta el comando.
         self.btnGuardar.configure(command=guardarInscripción) # Al presionar boton, se guarda la inscripción en base de datos
+        self.btnInfo.configure(command = mensajeInfo)
+        self.cmbx_Id_Alumno.bind("<Return>", insertarId)
+        self.cmbx_Id_Curso.bind("<Return>", insertarIdCurso)
         
     def run(self):
         self.mainwindow.mainloop()
