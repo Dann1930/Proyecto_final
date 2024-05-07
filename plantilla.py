@@ -187,6 +187,10 @@ class Inscripciones:
             else: 
                 msgb.showerror(message="Selección vacia.")
         
+        def ventanaConfirmacion():
+            confirmacion = msgb.askyesno(message="¿Está segur@ de realizar la siguiente acción?", title="Confirmación")
+            return confirmacion
+        
         def mensajeInfo(): #Crea una ventana emergente para mostrar la información del alumno.
             cmbx = getcmbx()
             if cmbx == "vacio": #Si el combobox esta vacio, al presionar el boton no dara error
@@ -243,6 +247,7 @@ class Inscripciones:
                 n= max_num[0]
                 n=n+1 
             return n
+        
         def insertarId(arg):
             valor = self.cmbx_Id_Alumno.get()
             for id in valsCmbxAl:
@@ -304,6 +309,7 @@ class Inscripciones:
             if getcmbx() == "vacio": #Si en la seleccion no hay nada
                 return mensajeError(1)
             else:
+
                 #Toma de datos de Combobox e Insert de fecha
                 cmbx = getcmbx()
                 cmbxCur = getcmbxCur()  
@@ -312,13 +318,18 @@ class Inscripciones:
                 cursos = cur.execute("SELECT Código_Curso FROM Inscritos where id_Alumno = \"{}\"".format(cmbx)).fetchall()
                 if cmbxCur == "vacio":
                     return mensajeError(4)
+                if fechaValida(fecha) == False:
+                    return mensajeError(2)
                 for curso in cursos:
                     if cmbxCur in curso:
                         return mensajeError(5)
-                #Se añade el registro a Inscritos tomando la información de cmbx para idCurso y idAluno.
-                guardar = cur.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(num_inscripcion,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
-                conexion.commit() #Confirma la inscripción.
-                actualizar("call") #Refresca el treeview.
+                
+                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si 
+                if ventanaConfirmacion() == 1:
+                    #Se añade el registro a Inscritos tomando la información de cmbx para idCurso y idAluno.
+                    guardar = cur.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(num_inscripcion,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
+                    conexion.commit() #Confirma la inscripción.
+                    actualizar("call") #Refresca el treeview.
 
         def eliminarLinea():
             if getcmbx() == "vacio": #Si en la seleccion no hay nada, se retorna pass.
@@ -326,13 +337,14 @@ class Inscripciones:
             elif SeleccionVacia():
                 return mensajeError(3)
             else:
-                cmbx = getcmbx()
-                #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
-                eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, seleccionLinea()[0]))
-                conexion.commit() #Confirma la eliminación.
-                actualizar("call") #Refresca el treeview.
+                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si 
+                if ventanaConfirmacion() == 1:
+                    cmbx = getcmbx()
+                    #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
+                    eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, seleccionLinea()[0]))
+                    conexion.commit() #Confirma la eliminación.
+                    actualizar("call") #Refresca el treeview.
                 
-
         self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
         self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".
         self.cmbx_Id_Curso.configure(values = valsCmbxCur) #Se colocan todas las opciones del combobox(los id_cursos).
