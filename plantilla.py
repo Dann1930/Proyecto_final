@@ -93,19 +93,19 @@ class Inscripciones:
         ''' Botones  de la Aplicación'''
         #Botón Guardar
         self.btnGuardar = ttk.Button(self.frm_1, name="btnguardar")
-        self.btnGuardar.configure(text='Guardar')
+        self.btnGuardar.configure(text='Guardar',state= tk.DISABLED)
         self.btnGuardar.place(anchor="nw", x=200, y=220)
         #Botón Editar
         self.btnEditar = ttk.Button(self.frm_1, name="btneditar")
-        self.btnEditar.configure(text='Editar')
+        self.btnEditar.configure(text='Editar',command=lambda: editar())
         self.btnEditar.place(anchor="nw", x=300, y=220)
         #Botón Eliminar
         self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar")
-        self.btnEliminar.configure(text='Eliminar')
+        self.btnEliminar.configure(text='Eliminar',state= tk.DISABLED)
         self.btnEliminar.place(anchor="nw", x=400, y=220)
         #Botón Cancelar
         self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar")
-        self.btnCancelar.configure(text='Cancelar')
+        self.btnCancelar.configure(text='Cancelar',state= tk.DISABLED)
         self.btnCancelar.place(anchor="nw", x=500, y=220)
         #Separador
         separator1 = ttk.Separator(self.frm_1)
@@ -224,6 +224,12 @@ class Inscripciones:
                 n= max_num[0]
                 n=n+1 
             return n
+        
+        def momento_cambio():
+            self.btnGuardar.configure(state= tk.DISABLED)
+            self.btnEliminar.configure(state= tk.DISABLED)
+            self.btnCancelar.configure(state= tk.DISABLED)
+            self.btnEditar.configure(state= tk.NORMAL)
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
             #Refresca el Treeview si hay hay elementos en el Treeview
@@ -268,7 +274,13 @@ class Inscripciones:
             seleccion = list(self.tView.item(linea).values())
             print(seleccion)
             return seleccion # Retorna una lista de los valores del registro.
-        
+
+        def editar():
+            self.btnGuardar.configure(state= tk.NORMAL)
+            self.btnEliminar.configure(state= tk.NORMAL)
+            self.btnCancelar.configure(state= tk.NORMAL)
+            self.btnEditar.configure(state= tk.DISABLED)
+
         def guardarInscripción(): 
             #Toma de datos de Combobox e Insert de fecha
             cmbx = getcmbx()
@@ -279,6 +291,7 @@ class Inscripciones:
             guardar = cur.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(num_inscripcion,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
             conexion.commit() #Confirma la inscripción.
             actualizar("call") #Refresca el treeview.
+            momento_cambio()
 
         def eliminarLinea():
             if SeleccionVacia(): #Si en la seleccion no hay nada, se retorna pass.
@@ -289,6 +302,7 @@ class Inscripciones:
                 eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, seleccionLinea()[0]))
                 conexion.commit() #Confirma la eliminación.
                 actualizar("call") #Refresca el treeview.
+            momento_cambio()
                 
 
         self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
@@ -297,7 +311,9 @@ class Inscripciones:
         self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".    
         self.btnEliminar.configure(command = eliminarLinea) #Al presionar el boton, se ejecuta el comando.
         self.btnGuardar.configure(command=guardarInscripción) # Al presionar boton, se guarda la inscripción en base de datos
-        
+
+    
+ 
     def run(self):
         self.mainwindow.mainloop()
 
