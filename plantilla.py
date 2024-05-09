@@ -126,12 +126,18 @@ class Inscripciones:
         self.tView = ttk.Treeview(self.frm_1, style="estilo.Treeview") 
         self.tView.configure()
         #Columnas del Treeview
-        self.tView["columns"]=("descripcion")
+        self.tView["columns"]=("descripcion","horas","creditos","aula")
         self.tView.column ("#0", anchor="w", stretch=True,width=5)
         self.tView.column ("descripcion", anchor="w", stretch=True,width=100)
+        self.tView.column ("horas", anchor="w", stretch=True,width=100)
+        self.tView.column ("creditos", anchor="w", stretch=True,width=100)
+        self.tView.column ("aula", anchor="w", stretch=True,width=100)
         #Cabeceras
         self.tView.heading("#0", anchor="center", text="Codigo")
         self.tView.heading("descripcion", anchor="center", text="Descripción")
+        self.tView.heading("horas", anchor="center", text="Horas semanales")
+        self.tView.heading("creditos", anchor="center", text="Creditos")
+        self.tView.heading("aula", anchor="center", text="Aula")
 
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.tView, orient="vertical", command=self.tView.yview)
@@ -359,7 +365,8 @@ class Inscripciones:
                 valsTreeview = ()
                 self.tView.insert(parent = "",index = tk.END, text = valsTreeview, values = valsTreeview)
             else:
-                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
+                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso , Cursos.Num_Horas, Cursos.Creditos, Cursos.Aula FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
+                
                 for Curso in range(len(valsTreeview)):
                     self.tView.insert(parent = "",index = tk.END, text = valsTreeview[Curso][0], values = valsTreeview[Curso][1:]) #Modificar si hay mas columnas a agregar(solo admite 2)
                 
