@@ -7,7 +7,6 @@ import tkinter.messagebox as msgb
 from pathlib import Path
 
 PATH = str((Path(__file__).resolve()).parent)
-
 ICON=r"/imagen/ed.ico"
 BD= r"/BD/database.db"
 class Inscripciones:
@@ -15,18 +14,19 @@ class Inscripciones:
         # Ventana principal
         self.db_name = PATH + BD   
         self.win = tk.Tk(master)
-        self.win.configure(background="#f7f9fd", height=600, width=800)
+        self.win.configure(background="#2B4D6F", height=600, width=800)
         self.win.geometry("800x600")
         self.win.iconbitmap(PATH +ICON)
         self.win.resizable(False, False)
         self.win.title("Inscripciones de Materias y Cursos")
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
-        self.frm_1.configure(background="#f7f9fd", height=600, width=800)
+        self.frm_1.configure(background="#2B4D6F", height=600, width=800)
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
-        self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 11 {bold}",
+        self.lblNoInscripcion.configure(background="#2B4D6F",font="{Arial} 11 {bold}",
                                         justify="left",state="normal",
-                                        takefocus=False,text='No.Inscripción')
+                                        takefocus=False,text='No.Inscripción',
+                                        foreground="white")
         
         #Label No. Inscripción
         self.lblNoInscripcion.place(anchor="nw", x=670, y=20)
@@ -37,16 +37,17 @@ class Inscripciones:
 
         #Label Fecha
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
-        self.lblFecha.configure(background="#f7f9fd", text='Fecha:')
+        self.lblFecha.configure(background="#2B4D6F", text='Fecha:',foreground="white")
         self.lblFecha.place(anchor="nw", x=630, y=85)
         #Entry Fecha
         self.fecha = ttk.Entry(self.frm_1, name="fecha")
-        self.fecha.configure(justify="center")
+        self.fecha.configure(justify="center",state= tk.DISABLED)
         self.fecha.place(anchor="nw", width=90, x=680, y=85)
+        #self.fecha.insert(0,"DD/MM/AAAA")
 
         #Label Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
-        self.lblIdAlumno.configure(background="#f7f9fd", text='Id Alumno:')
+        self.lblIdAlumno.configure(background="#2B4D6F", text='Id Alumno:',foreground="white")
         self.lblIdAlumno.place(anchor="nw", x=30, y=85)
         #Combobox Alumno
         self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno")
@@ -54,7 +55,7 @@ class Inscripciones:
 
         #Label Alumno
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
-        self.lblNombres.configure(background="#f7f9fd",text='Nombre(s):')
+        self.lblNombres.configure(background="#2B4D6F",text='Nombre(s):',foreground="white")
         self.lblNombres.place(anchor="nw", x=30, y=140)
         #Entry Alumno
         self.nombres = ttk.Entry(self.frm_1, name="nombres")
@@ -62,7 +63,7 @@ class Inscripciones:
 
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
-        self.lblApellidos.configure(background="#f7f9fd",text='Apellido(s):')
+        self.lblApellidos.configure(background="#2B4D6F",text='Apellido(s):',foreground="white")
         self.lblApellidos.place(anchor="nw", x=400, y=140)
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
@@ -70,7 +71,7 @@ class Inscripciones:
 
         #Label Id Curso
         self.lblIdCurso = ttk.Label(self.frm_1, name="lblidcurso")
-        self.lblIdCurso.configure(background="#f7f9fd", text='Id Curso:')
+        self.lblIdCurso.configure(background="#2B4D6F", text='Id Curso:',foreground="white")
         self.lblIdCurso.place(anchor="nw", x=30, y=180)
         #Entry Id Curso
         self.idCurso = ttk.Entry(self.frm_1, name="idcurso")
@@ -83,22 +84,25 @@ class Inscripciones:
 
         #Label Curso
         self.lblCurso = ttk.Label(self.frm_1, name="lblcurso")
-        self.lblCurso.configure(background="#f7f9fd", text='Curso:')
+        self.lblCurso.configure(background="#2B4D6F", text='Curso:',foreground="white")
         self.lblCurso.place(anchor="nw", x=400, y=180)
         #Entry Curso
         self.curso = ttk.Entry(self.frm_1, name="curso")
-        self.curso.configure(justify="center",state= tk.DISABLED)
+        self.curso.configure(justify="center",state= tk.DISABLED, background="blue")
         self.curso.place(anchor="nw", width=200, x=485, y=180)
 
 
         ''' Botones  de la Aplicación'''
+        estilo= ttk.Style()
+        estilo.configure("TButton",foreground= "#2B4D6F", background="blue")
+        estilo.map("TButton",foreground=[("pressed","green"), ("disabled", "white"),("active","red")])
         #Botón Guardar
         self.btnGuardar = ttk.Button(self.frm_1, name="btnguardar")
         self.btnGuardar.configure(text='Guardar',state= tk.DISABLED)
         self.btnGuardar.place(anchor="nw", x=200, y=220)
         #Botón Editar
         self.btnEditar = ttk.Button(self.frm_1, name="btneditar")
-        self.btnEditar.configure(text='Editar',command=lambda: editar())
+        self.btnEditar.configure(text='Editar',command=lambda: modo_editar())
         self.btnEditar.place(anchor="nw", x=300, y=220)
         #Botón Eliminar
         self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar")
@@ -202,6 +206,8 @@ class Inscripciones:
                 #print(datosAlumno)
                 info = tk.Toplevel(self.win) #Crea una ventana con master al programa principal
                 info.title("Información del estudiante")
+                info.iconbitmap(PATH + ICON)
+                info.configure(background="#2B4D6F")
                 #Crea un label con la informacion alineada a la izquierda, en un pack()
                 tk.Label(info, text= "\
                         Nombre:\t{} \n \
@@ -213,7 +219,7 @@ class Inscripciones:
                         Telefono Celular:\t{} \n \
                         Telefono Fijo:\t{} \n \
                         Ciudad:\t \t{} \n \
-                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font= 'TkDefaultFont').pack(ipadx=20, pady=10)
+                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11 {bold}",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
                 tk.Button(info, text = "Ok", command = info.destroy).pack(pady=10) #Cierra la ventana
 
         #Toma de la Fecha por medio del insert
@@ -248,20 +254,46 @@ class Inscripciones:
                 n= max_num[0]
                 n=n+1 
             return n
+        def getCurso():
+            curso = self.curso.get()
+            if curso == "":
+                return -1
+            return curso
         
         def insertarId(arg):
-            valor = self.cmbx_Id_Alumno.get()
+            idValor = self.cmbx_Id_Alumno.get().replace(" ","")
+            idValor = idValor.upper()
+            capValor = tk.StringVar(master, value=idValor.upper())
+            self.cmbx_Id_Alumno.configure(textvariable = capValor)
             for id in valsCmbxAl:
-                if valor  in id:
-                    return actualizar("call")
+                if idValor in id:
+                    return actualizar("idAlumno:{}".format(idValor))
+                
             return mensajeError(6)
-
         def insertarIdCurso(arg):
             valor = self.cmbx_Id_Curso.get()
             for id in valsCmbxCur:
                 if valor in id:
-                    return actualizar("call")
+                    self.curso.configure(textvariable= tk.StringVar(value=""))
+                    return actualizar("idCurso:{}".format(valor))
             return mensajeError(7)
+        
+        def insertarCurso(arg):
+            lista = cur.execute("SELECT Descrip_Curso,Código_Curso FROM Cursos").fetchall()
+            valor = self.curso.get().strip()
+            valor = valor.upper()
+            for curso in lista:
+                if valor in curso:
+                    self.cmbx_Id_Curso.configure(textvariable= tk.StringVar(value=""))
+                    return actualizar("Curso:{}".format(valor))       
+            return mensajeError(7)
+        
+        def cursoCombobox(arg):
+            return actualizar("CursoCombobox:{}".format(self.cmbx_Id_Curso.get()))
+        
+        def botonCancelar():
+            return actualizar("cancelar:activar")
+        
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
             #Refresca el Treeview si hay hay elementos en el Treeview
@@ -269,59 +301,92 @@ class Inscripciones:
                 tViewActual = self.tView.get_children()
                 for item in tViewActual:
                     self.tView.delete(item)
+        
+            call = call.split(":")
+            print(call)
 
+            if call[0] == "idAlumno":
+                self.capValor = tk.StringVar(master, value= call[1])
+                self.cmbx_Id_Alumno.configure(textvariable = self.capValor)
+            else:
+                pass
             cmbx = getcmbx()
 
-            #Nombre y Apellidos, Para cambiar el label hay que crear un StringVar
-            valsNombreApellidos = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE Id_Alumno =  \"{}\"".format(cmbx)).fetchone()
-            self.nombresvar = tk.StringVar(value = valsNombreApellidos[0])
-            self.nombres.configure(textvariable = self.nombresvar)
-            self.apellidosvar = tk.StringVar(value = valsNombreApellidos[1])
-            self.apellidos.configure(textvariable=self.apellidosvar)
-       
-            cmbxCur = getcmbxCur()
-            if cmbxCur == "vacio":
+            if cmbx == "vacio":
                 pass
             else:
-            #Curso, Para cambiar el label hay que crear un StringVar
-                valIdCurso = cur.execute("SELECT Descrip_Curso FROM Cursos WHERE Código_Curso =  \"{}\"".format(cmbxCur)).fetchone()
+                #Nombre y Apellidos, Para cambiar el label hay que crear un StringVar
+                valsNombreApellidos = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE Id_Alumno =  \"{}\"".format(cmbx)).fetchone()
+                self.nombresvar = tk.StringVar(value = valsNombreApellidos[0])
+                self.nombres.configure(textvariable = self.nombresvar)
+                self.apellidosvar = tk.StringVar(value = valsNombreApellidos[1])
+                self.apellidos.configure(textvariable=self.apellidosvar)
+       
+            cmbxCur = getcmbxCur()
+            if call[0] == "Curso":
+                self.varCurso = tk.StringVar(value = call[1])
+                self.curso.configure(textvariable = self.varCurso)
+                valCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos WHERE Descrip_Curso = \"{}\"".format(self.curso.get())).fetchone()
+                self.valCmbxCur = tk.StringVar(value = valCmbxCur) 
+                self.cmbx_Id_Curso.configure(textvariable = self.valCmbxCur)
+            
+            if call[0] == "idCurso":
+                valCur = cur.execute("SELECT Descrip_Curso FROM Cursos WHERE Código_Curso = \"{}\"".format(self.cmbx_Id_Curso.get())).fetchone()
+                self.valCur = tk.StringVar(value = valCur[0]) 
+                self.curso.configure(textvariable = self.valCur)
+
+            if call[0] == "CursoCombobox":
+                valIdCurso = cur.execute("SELECT Descrip_Curso FROM Cursos WHERE Código_Curso =  \"{}\"".format(call[1])).fetchone()
                 self.cursosvar = tk.StringVar(value = valIdCurso[0])
                 self.curso.configure(textvariable = self.cursosvar)
 
             busqueda = cur.execute( "SELECT No_Inscripción FROM Inscritos WHERE Id_Alumno =  \"{}\"".format(cmbx)).fetchone()
             self.inscripcionvar = tk.StringVar(value = busqueda[0])
             self.num_Inscripcion.configure(textvariable = self.inscripcionvar)
+            if call[0] == "cancelar":
+                    self.cmbx_Id_Alumno.delete(0,100)
+                    self.cmbx_Id_Curso.delete(0,100)
+                    self.curso.delete(0,100)
+                    self.fecha.delete(0,100)
+                    self.nombres.delete(0,100)
+                    self.apellidos.delete(0,100)
             
             
             #TreeView
             # Hace un INNER JOIN de 3 tabla (Alumnos, Inscritos, Cursos) y selecciona los registros donde el id_alumno coincide con la opcion del combobox
             #Retorna una lista de atributos de cada registro y los inserta en el treeview parent = "" 
-            valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
-            for Curso in range(len(valsTreeview)):
-                self.tView.insert(parent = "",index = tk.END, text = valsTreeview[Curso][0], values = valsTreeview[Curso][1:]) #Modificar si hay mas columnas a agregar(solo admite 2)
-
+            if call[0] == "cancelar":
+                valsTreeview = ()
+                self.tView.insert(parent = "",index = tk.END, text = valsTreeview, values = valsTreeview)
+            else:
+                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
+                for Curso in range(len(valsTreeview)):
+                    self.tView.insert(parent = "",index = tk.END, text = valsTreeview[Curso][0], values = valsTreeview[Curso][1:]) #Modificar si hay mas columnas a agregar(solo admite 2)
+                
 
         def seleccionLinea(): #Al seleccionar un registro en el treeview, los valores se guardan en el objeto self.tview.selection(), self.tview.item retorna una lista de los valores
             linea = self.tView.selection()
             seleccion = list(self.tView.item(linea).values())
             return seleccion # Retorna una lista de los valores del registro.
 
-        def editar():
+        def modo_editar():
             self.btnGuardar.configure(state= tk.NORMAL)
             self.btnCancelar.configure(state= tk.NORMAL)
             self.btnEditar.configure(state= tk.DISABLED)
             self.cmbx_Id_Curso.configure(state= tk.NORMAL)
             self.curso.configure(state= tk.NORMAL)
-            self.btnEliminar.configure(state= tk.DISABLED)
+            self.fecha.configure(state=tk.NORMAL)
         
-        def no_Editar():
+    
+        def modo_No_Editar():
             self.btnGuardar.configure(state= tk.DISABLED)
             self.btnCancelar.configure(state= tk.DISABLED)
             self.btnEliminar.configure(state= tk.NORMAL)
             self.btnEditar.configure(state= tk.NORMAL)
             self.cmbx_Id_Curso.configure(state= tk.DISABLED)
             self.curso.configure(state= tk.DISABLED)
-            
+            self.fecha.configure(state=tk.DISABLED)
+
         def guardarInscripción(): 
             if getcmbx() == "vacio": #Si en la seleccion no hay nada
                 return mensajeError(1)
@@ -349,7 +414,8 @@ class Inscripciones:
                     actualizar("call") #Refresca el treeview.
                     self.cmbx_Id_Curso.delete(0,tk.END)
                     self.curso.delete(0,tk.END)
-                no_Editar()
+                    self.fecha.delete(0,tk.END)
+                modo_No_Editar()
                 
 
         def eliminarLinea():
@@ -369,20 +435,22 @@ class Inscripciones:
         def botonCancelar():
             self.cmbx_Id_Curso.delete(0,tk.END)
             self.curso.delete(0,tk.END)
-            no_Editar()
+            modo_No_Editar()
             return actualizar("cancelar:activar")
 
         self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
-        self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".
+        self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", insertarId) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".
         self.cmbx_Id_Curso.configure(values = valsCmbxCur) #Se colocan todas las opciones del combobox(los id_cursos).
-        self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", actualizar) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".    
+        self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", cursoCombobox) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".    
         self.btnEliminar.configure(command = eliminarLinea) #Al presionar el boton, se ejecuta el comando.
         self.btnGuardar.configure(command=guardarInscripción) # Al presionar boton, se guarda la inscripción en base de datos
         self.btnCancelar.configure(command = botonCancelar)
         self.btnInfo.configure(command = mensajeInfo)
         self.cmbx_Id_Alumno.bind("<Return>", insertarId)
         self.cmbx_Id_Curso.bind("<Return>", insertarIdCurso)
-        
+        self.curso.bind("<Return>", insertarCurso)
+        self.btnCancelar.configure(command = botonCancelar)
+
     def run(self):
         self.mainwindow.mainloop()
 
