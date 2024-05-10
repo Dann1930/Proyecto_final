@@ -127,15 +127,16 @@ class Inscripciones:
         self.tView.configure()
         #Columnas del Treeview
         self.tView["columns"]=("descripcion","horas","creditos","aula")
-        self.tView.column ("#0", anchor="w", stretch=True,width=5)
-        self.tView.column ("descripcion", anchor="w", stretch=True,width=100)
-        self.tView.column ("horas", anchor="w", stretch=True,width=100)
-        self.tView.column ("creditos", anchor="w", stretch=True,width=100)
-        self.tView.column ("aula", anchor="w", stretch=True,width=100)
+        self.tView.column ("#0", anchor="w", stretch=True,width=10)
+        self.tView.column ("descripcion", anchor="w", stretch=True,width=200)
+        self.tView.column ("horas", anchor="w", stretch=True,width=80)
+        self.tView.column ("creditos", anchor="w", stretch=True,width=80)
+        self.tView.column ("aula", anchor="w", stretch=True,width=80)
+        
         #Cabeceras
         self.tView.heading("#0", anchor="center", text="Codigo")
-        self.tView.heading("descripcion", anchor="center", text="Descripción")
-        self.tView.heading("horas", anchor="center", text="Horas semanales")
+        self.tView.heading("descripcion", anchor="center",  text="Descripción")
+        self.tView.heading("horas", anchor="center",  text="Horas semanales")
         self.tView.heading("creditos", anchor="center", text="Creditos")
         self.tView.heading("aula", anchor="center", text="Aula")
 
