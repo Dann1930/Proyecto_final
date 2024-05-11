@@ -177,10 +177,19 @@ class Inscripciones:
                      return True
                      
         def SeleccionVacia(): #Selección del treeview vacia (en realidad es ['', '', '', 0, ''] ), si la seleccion es vacia y se oprime el boton, no de error, se retorna un pass
-            if seleccionLinea()[0] == "": 
+            if len(seleccionLinea()) == 0 : 
                 return True
             else:
                 return False
+            
+        def seleccionLinea():
+             #Al seleccionar un registro en el treeview, los valores se guardan en el objeto self.tview.selection(), self.tview.item retorna una lista de los valores
+            lineas = self.tView.selection()
+            seleccion = []
+            for item in lineas:
+                seleccion.append(list(self.tView.item(item).values()))
+            return seleccion # Retorna una lista de los valores del registro.
+            
         def mensajeError(codigo):
             if codigo == 1: #1 No hay alumno seleccionado en el combobox
                 msgb.showerror(message="Seleccione un alumno.")
@@ -372,10 +381,7 @@ class Inscripciones:
                     self.tView.insert(parent = "",index = tk.END, text = valsTreeview[Curso][0], values = valsTreeview[Curso][1:]) #Modificar si hay mas columnas a agregar(solo admite 2)
                 
 
-        def seleccionLinea(): #Al seleccionar un registro en el treeview, los valores se guardan en el objeto self.tview.selection(), self.tview.item retorna una lista de los valores
-            linea = self.tView.selection()
-            seleccion = list(self.tView.item(linea).values())
-            return seleccion # Retorna una lista de los valores del registro.
+        
 
         def modo_editar():
             self.btnGuardar.configure(state= tk.NORMAL)
@@ -436,7 +442,8 @@ class Inscripciones:
                 if ventanaConfirmacion() == 1:
                     cmbx = getcmbx()
                     #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
-                    eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, seleccionLinea()[0]))
+                    for linea in seleccionLinea():
+                        eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, linea[0]))
                     conexion.commit() #Confirma la eliminación.
                     actualizar("call") #Refresca el treeview.
 
