@@ -208,8 +208,8 @@ class Inscripciones:
             else: 
                 msgb.showerror(message="Selección vacia.")
         
-        def ventanaConfirmacion():
-            confirmacion = msgb.askyesno(message="¿Está segur@ de realizar la siguiente acción?", title="Confirmación")
+        def ventanaConfirmacion(texto):
+            confirmacion = msgb.askyesno(message=texto, title="Confirmación", )
             return confirmacion
         
         def mensajeInfo(): #Crea una ventana emergente para mostrar la información del alumno.
@@ -420,8 +420,13 @@ class Inscripciones:
                     if cmbxCur in curso:
                         return mensajeError(5)
                 
-                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si 
-                if ventanaConfirmacion() == 1:
+                #Se crean dos tuplas, una de los nombres y apellidos del alumno a inscribir. Y otra del curso con su respectiva aula a inscribir 
+                alumno = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone()
+                curso = cur.execute("SELECT Descrip_Curso, Aula FROM Cursos WHERE Código_Curso = \"{}\"".format(cmbxCur)).fetchone()
+                #Se crea un String el cual almacena el mensaje a monstrar en la ventana de confirmación
+                textCon = "¿Esta segur@ de guardar la siguiente inscripción (" + str(curso[0]) + ") con aula (" + str(curso[1]) + ") para el alumno "  + str(alumno[0]) + " " + str(alumno[1]) + "?"
+                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si, además ingresamos el String textCon como parametro
+                if ventanaConfirmacion(textCon) == 1:
                     #Se añade el registro a Inscritos tomando la información de cmbx para idCurso y idAluno.
                     guardar = cur.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_Inscripción, Código_Curso) VALUES (\"{}\",\"{}\",\"{}\",\"{}\") ".format(num_inscripcion,cmbx,fecha,cmbxCur)) #Se realiza inserción de datos a la tabla inscritos
                     conexion.commit() #Confirma la inscripción.
@@ -433,14 +438,20 @@ class Inscripciones:
                 
 
         def eliminarLinea():
-            if getcmbx() == "vacio": #Si en la seleccion no hay nada, se retorna pass.
+            cmbx = getcmbx()
+            if cmbx == "vacio": #Si en la seleccion no hay nada, se retorna pass.
                 return mensajeError(1)
             elif SeleccionVacia():
                 return mensajeError(3)
             else:
-                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si 
-                if ventanaConfirmacion() == 1:
-                    cmbx = getcmbx()
+                #Se crea una tupla para guardar los nombres y apellidos del alumno
+                alumno = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone()
+                #Por medio del metodo seleccionLinea, tomamos la cantidad de registros seleccionados en el treview
+                cantSeleccion = len(seleccionLinea())  
+                #Se crea un String el cual almacena el mensaje a monstrar en la ventana de confirmación
+                textCon = "¿Esta segur@ de eliminar las siguientes (" + str(cantSeleccion) + ") inscripciones de " + str(alumno[0]) + " " + str(alumno[1]) + "?"
+                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si, además ingresamos el String textCon como parametro
+                if ventanaConfirmacion(textCon) == 1:
                     #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
                     for linea in seleccionLinea():
                         eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, linea[0]))
