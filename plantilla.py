@@ -176,24 +176,24 @@ class Inscripciones:
                  else:
                      return True
                      
-        def SeleccionVacia(): #Selección del treeview vacia (en realidad es ['', '', '', 0, ''] ), si la seleccion es vacia y se oprime el boton, no de error, se retorna un pass
+        def SeleccionVacia(): #Selección del treeview vacia. Una selección vacia es una lista vacia.
             if len(seleccionLinea()) == 0 : 
                 return True
             else:
                 return False
             
         def seleccionLinea():
-             #Al seleccionar un registro en el treeview, los valores se guardan en el objeto self.tview.selection(), self.tview.item retorna una lista de los valores
-            lineas = self.tView.selection()
+             #Al seleccionar un registro en el treeview, los valores se guardan en el objeto self.tview.selection(), self.tview.item retorna la lista con los codigos de los registros seleccionados
+            lineas = self.tView.selection() #
             seleccion = []
             for item in lineas:
                 seleccion.append(list(self.tView.item(item).values()))
-            return seleccion # Retorna una lista de los valores del registro.
+            return seleccion # Retorna una lista de los valores de los registros seleccionados
             
-        def mensajeError(codigo):
-            if codigo == 1: #1 No hay alumno seleccionado en el combobox
+        def mensajeError(codigo): #Mensajes de error
+            if codigo == 1: 
                 msgb.showerror(message="Seleccione un alumno.")
-            elif codigo == 2: #Dato invalido
+            elif codigo == 2: 
                 msgb.showerror(message="La fecha no es valida.")
             elif codigo == 3:
                 msgb.showerror(message="Seleccióne un registro.")
@@ -214,11 +214,11 @@ class Inscripciones:
         
         def mensajeInfo(): #Crea una ventana emergente para mostrar la información del alumno.
             cmbx = getcmbx()
-            if cmbx == "vacio": #Si el combobox esta vacio, al presionar el boton no dara error
+            if cmbx == "vacio": #Si el combobox del alumno esta vacio, al presionar el boton no dara error
                 return mensajeError(1)
             else:
-                datosAlumno = cur.execute("SELECT * FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone() #Query de los datos en una lista
-                carrera = cur.execute("SELECT Alumnos.id_Carrera, Carreras.Descripción FROM Alumnos INNER JOIN Carreras ON Alumnos.id_Carrera = Carreras.Código_Carrera WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone()
+                datosAlumno = cur.execute("SELECT * FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone() #Query de los datos obtenidos de del alumno en una lista
+                carrera = cur.execute("SELECT Alumnos.id_Carrera, Carreras.Descripción FROM Alumnos INNER JOIN Carreras ON Alumnos.id_Carrera = Carreras.Código_Carrera WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone() #Obtiene el nombre de la carrera segun el codigo en los datos del alumno
                 #print(datosAlumno)
                 info = tk.Toplevel(self.win) #Crea una ventana con master al programa principal
                 info.title("Información del estudiante")
@@ -238,8 +238,8 @@ class Inscripciones:
                         Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11 {bold}",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
                 tk.Button(info, text = "Ok", command = info.destroy).pack(pady=10) #Cierra la ventana
 
-        #Toma de la Fecha por medio del insert
-        def getFecha():
+        
+        def getFecha(): #Toma de la Fecha por medio del insert
             fecha = self.fecha.get()
             return fecha
             
@@ -276,52 +276,53 @@ class Inscripciones:
                 return -1
             return curso
         
-        def insertarId(arg):
-            idValor = self.cmbx_Id_Alumno.get().replace(" ","")
-            idValor = idValor.upper()
-            capValor = tk.StringVar(master, value=idValor.upper())
-            self.cmbx_Id_Alumno.configure(textvariable = capValor)
-            for id in valsCmbxAl:
+        def insertarId(arg): #Agrega el contexto para actualizar la interfaz
+            idValor = self.cmbx_Id_Alumno.get().replace(" ","") #Si el datos es insertado, elimina los espacios al inicio y al final
+            idValor = idValor.upper() #Segun el formato de los codigos de los alumnos, los convierte en mayuscualas
+            capValor = tk.StringVar(master, value=idValor.upper()) #Crea un StringVar para cambiar el texto del combobox
+            self.cmbx_Id_Alumno.configure(textvariable = capValor) #Se remplaza el texto del combobox
+            for id in valsCmbxAl: #Busca dentro de los valores del comobobox si el valor insertado esta dentro, y si lo esta retorna la acción para cambiar el aceptar el id insertado
                 if idValor in id:
                     return actualizar("idAlumno:{}".format(idValor))
-                
             return mensajeError(6)
-        def insertarIdCurso(arg):
-            valor = self.cmbx_Id_Curso.get()
-            for id in valsCmbxCur:
+
+        def insertarIdCurso(arg): #Inserta el curso por escritura
+            valor = self.cmbx_Id_Curso.get() #Obtiene el curso escrito en el combobox
+            for id in valsCmbxCur: #Si el curso estra dentro de los valores del combobox, se retorna la accion para actualizar con el id seleccionado
                 if valor in id:
                     self.curso.configure(textvariable= tk.StringVar(value=""))
                     return actualizar("idCurso:{}".format(valor))
             return mensajeError(7)
         
-        def insertarCurso(arg):
-            lista = cur.execute("SELECT Descrip_Curso,Código_Curso FROM Cursos").fetchall()
-            valor = self.curso.get().strip()
-            valor = valor.upper()
-            for curso in lista:
+        def insertarCurso(arg): #Inserta el nombre del curso por escritura
+            lista = cur.execute("SELECT Descrip_Curso,Código_Curso FROM Cursos").fetchall() #Crea una lista de todos los cursos en la base de datos
+            valor = self.curso.get().strip() #Se obtiene el curso escrito en el label
+            valor = valor.upper() #Lo convierte en mayusculas
+            for curso in lista: #Si el curso esta en los valores, retorna la accion para actualizar
                 if valor in curso:
                     self.cmbx_Id_Curso.configure(textvariable= tk.StringVar(value=""))
                     return actualizar("Curso:{}".format(valor))       
             return mensajeError(7)
         
-        def cursoCombobox(arg):
+        def cursoCombobox(arg): #Retorna la seleccion del combobobox de los cursos
             return actualizar("CursoCombobox:{}".format(self.cmbx_Id_Curso.get()))
         
-        def botonCancelar():
+        def botonCancelar(): #Se retorna la accion cancelar
             return actualizar("cancelar:activar")
         
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
+            #cada llamado que entra en actualizar debe estar acompañado de ("accion:contexto")
             #Refresca el Treeview si hay hay elementos en el Treeview
             if len(self.tView.get_children(""))!= 0:
                 tViewActual = self.tView.get_children()
                 for item in tViewActual:
                     self.tView.delete(item)
         
-            call = call.split(":")
+            call = call.split(":")  #Retorna una lista con las acciones 
             print(call)
 
-            if call[0] == "idAlumno":
+            if call[0] == "idAlumno": #Si el llamado tiene accion idAlumno, se actualiza el idAlumno 
                 self.capValor = tk.StringVar(master, value= call[1])
                 self.cmbx_Id_Alumno.configure(textvariable = self.capValor)
             else:
@@ -331,7 +332,7 @@ class Inscripciones:
             if cmbx == "vacio":
                 pass
             else:
-                #Nombre y Apellidos, Para cambiar el label hay que crear un StringVar
+                #Nombre y Apellidos, Para cambiar el label hay que crear un StringVar, Los nombres y apellidos se cambian segun el idALumno del combobox 
                 valsNombreApellidos = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE Id_Alumno =  \"{}\"".format(cmbx)).fetchone()
                 self.nombresvar = tk.StringVar(value = valsNombreApellidos[0])
                 self.nombres.configure(textvariable = self.nombresvar)
@@ -339,19 +340,19 @@ class Inscripciones:
                 self.apellidos.configure(textvariable=self.apellidosvar)
        
             cmbxCur = getcmbxCur()
-            if call[0] == "Curso":
+            if call[0] == "Curso": #Si el llamado tiene "Curso", se cambia el curso de la interfaz
                 self.varCurso = tk.StringVar(value = call[1])
-                self.curso.configure(textvariable = self.varCurso)
-                valCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos WHERE Descrip_Curso = \"{}\"".format(self.curso.get())).fetchone()
+                self.curso.configure(textvariable = self.varCurso) #Cambia el curso
+                valCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos WHERE Descrip_Curso = \"{}\"".format(self.curso.get())).fetchone() #Obtiene el codigo del Curso
                 self.valCmbxCur = tk.StringVar(value = valCmbxCur) 
-                self.cmbx_Id_Curso.configure(textvariable = self.valCmbxCur)
+                self.cmbx_Id_Curso.configure(textvariable = self.valCmbxCur) #Cambia el codigo del curso del combobox de acuerdo al nombre del curso
             
-            if call[0] == "idCurso":
+            if call[0] == "idCurso": #Si el llamado tiene "idCurso", entonces se cambia el nombre del curso.
                 valCur = cur.execute("SELECT Descrip_Curso FROM Cursos WHERE Código_Curso = \"{}\"".format(self.cmbx_Id_Curso.get())).fetchone()
                 self.valCur = tk.StringVar(value = valCur[0]) 
                 self.curso.configure(textvariable = self.valCur)
 
-            if call[0] == "CursoCombobox":
+            if call[0] == "CursoCombobox": #Se actualiza con la selección del combobox de cursos
                 valIdCurso = cur.execute("SELECT Descrip_Curso FROM Cursos WHERE Código_Curso =  \"{}\"".format(call[1])).fetchone()
                 self.cursosvar = tk.StringVar(value = valIdCurso[0])
                 self.curso.configure(textvariable = self.cursosvar)
@@ -359,7 +360,7 @@ class Inscripciones:
             busqueda = cur.execute( "SELECT No_Inscripción FROM Inscritos WHERE Id_Alumno =  \"{}\"".format(cmbx)).fetchone()
             self.inscripcionvar = tk.StringVar(value = busqueda[0])
             self.num_Inscripcion.configure(textvariable = self.inscripcionvar)
-            if call[0] == "cancelar":
+            if call[0] == "cancelar": #Si el llamado es "Cancelar", Se borran todos los campos
                     self.cmbx_Id_Alumno.delete(0,100)
                     self.cmbx_Id_Curso.delete(0,100)
                     self.curso.delete(0,100)
@@ -371,10 +372,10 @@ class Inscripciones:
             #TreeView
             # Hace un INNER JOIN de 3 tabla (Alumnos, Inscritos, Cursos) y selecciona los registros donde el id_alumno coincide con la opcion del combobox
             #Retorna una lista de atributos de cada registro y los inserta en el treeview parent = "" 
-            if call[0] == "cancelar":
+            if call[0] == "cancelar": #Si la accion es cancelar, se vacia el treeview
                 valsTreeview = ()
                 self.tView.insert(parent = "",index = tk.END, text = valsTreeview, values = valsTreeview)
-            else:
+            else: #Si el alumno cambia, o se modifico la base de datos, se actualiza el treeview
                 valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso , Cursos.Num_Horas, Cursos.Creditos, Cursos.Aula FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
                 
                 for Curso in range(len(valsTreeview)):
@@ -439,9 +440,9 @@ class Inscripciones:
 
         def eliminarLinea():
             cmbx = getcmbx()
-            if cmbx == "vacio": #Si en la seleccion no hay nada, se retorna pass.
+            if cmbx == "vacio": #Si no hay alumno seleccionado(y por ende no hay nada en el treeview), se retorna error 1
                 return mensajeError(1)
-            elif SeleccionVacia():
+            elif SeleccionVacia(): #Si hay alumno pero no se ha seleccionado algun registro, se retorna error 3
                 return mensajeError(3)
             else:
                 #Se crea una tupla para guardar los nombres y apellidos del alumno
@@ -458,7 +459,7 @@ class Inscripciones:
                     conexion.commit() #Confirma la eliminación.
                     actualizar("call") #Refresca el treeview.
 
-        def botonCancelar():
+        def botonCancelar(): #bloque de codigo que se ejecuta si acciona el boton
             self.cmbx_Id_Curso.delete(0,tk.END)
             self.curso.delete(0,tk.END)
             modo_No_Editar()
@@ -470,11 +471,11 @@ class Inscripciones:
         self.cmbx_Id_Curso.bind("<<ComboboxSelected>>", cursoCombobox) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".    
         self.btnEliminar.configure(command = eliminarLinea) #Al presionar el boton, se ejecuta el comando.
         self.btnGuardar.configure(command=guardarInscripción) # Al presionar boton, se guarda la inscripción en base de datos
-        self.btnCancelar.configure(command = botonCancelar)
-        self.btnInfo.configure(command = mensajeInfo)
-        self.cmbx_Id_Alumno.bind("<Return>", insertarId)
-        self.cmbx_Id_Curso.bind("<Return>", insertarIdCurso)
-        self.curso.bind("<Return>", insertarCurso)
+        self.btnCancelar.configure(command = botonCancelar) # Al presionar boton, se acciona cancelar
+        self.btnInfo.configure(command = mensajeInfo) # Al presionar boton, aparece la ventana de info
+        self.cmbx_Id_Alumno.bind("<Return>", insertarId) # Al presionar enter en el comobobox
+        self.cmbx_Id_Curso.bind("<Return>", insertarIdCurso) # Al presionar enter en el comobobox de cursos
+        self.curso.bind("<Return>", insertarCurso) # Al presionar enter en cursos
         self.btnCancelar.configure(command = botonCancelar)
 
     def run(self):
