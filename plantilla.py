@@ -34,13 +34,32 @@ class Inscripciones:
         self.num_Inscripcion = ttk.Entry(self.frm_1, name="num_inscripcion")
         self.num_Inscripcion.configure(justify="right")
         self.num_Inscripcion.place(anchor="nw", width=100, x=672, y=50)
+        #Funcion barras de fecha
+        def fecha_barras(action, fecha, car): #agrega los slash a la fecha 
+            if action == '0':
+                if car == '/':
+                    return False #no permite el ingreso de slash a mano propia
+            if action == '1':
+                if len(fecha) > 10:
+                    return False #la fecha no pasa de 10 caracteres
+                elif car.isalpha():
+                    return False #no permite valores "str" al digitar los numeros
+                elif car == '/':
+                    return False
+                elif len(fecha) == 3 or len(fecha) == 6:
+                    if fecha.count('/') < 2: #agrega los slash
+                        arreglo = self.fecha.get()
+                        arreglo += '/'
+                        self.fecha.delete(0,tk.END)
+                        self.fecha.insert(0,arreglo)
+                return True
 
         #Label Fecha
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
         self.lblFecha.configure(background="#2B4D6F", text='Fecha:',foreground="white")
         self.lblFecha.place(anchor="nw", x=630, y=85)
         #Entry Fecha
-        self.fecha = ttk.Entry(self.frm_1, name="fecha")
+        self.fecha = ttk.Entry(self.frm_1, name="fecha", validate = "key", validatecommand=(self.win.register(fecha_barras),"%d","%P", "%S")) #valida la funcion anterior
         self.fecha.configure(justify="center",state= tk.DISABLED)
         self.fecha.place(anchor="nw", width=90, x=680, y=85)
         #self.fecha.insert(0,"DD/MM/AAAA")
