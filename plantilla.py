@@ -230,6 +230,12 @@ class Inscripciones:
         def ventanaConfirmacion(texto):
             confirmacion = msgb.askyesno(message=texto, title="Confirmación", )
             return confirmacion
+            
+        def mensajeConfirmacion(int):
+            if int == 1:
+                msgb.showinfo(message="Cambios guardados con exito.")
+            if int ==2:
+                msgb.showinfo(message="No se realizó ningun cambio")
         
         def mensajeInfo(): #Crea una ventana emergente para mostrar la información del alumno.
             cmbx = getcmbx()
@@ -454,8 +460,10 @@ class Inscripciones:
                     self.cmbx_Id_Curso.delete(0,tk.END)
                     self.curso.delete(0,tk.END)
                     self.fecha.delete(0,tk.END)
+                    mensajeConfirmacion(1)
+                else:
+                    mensajeConfirmacion(2)
                 modo_No_Editar()
-                
 
         def eliminarLinea():
             cmbx = getcmbx()
@@ -477,6 +485,9 @@ class Inscripciones:
                         eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, linea[0]))
                     conexion.commit() #Confirma la eliminación.
                     actualizar("call") #Refresca el treeview.
+                    mensajeConfirmacion(1)
+                else:
+                    mensajeConfirmacion(2)
 
         def botonCancelar(): #bloque de codigo que se ejecuta si acciona el boton
             self.cmbx_Id_Curso.delete(0,tk.END)
