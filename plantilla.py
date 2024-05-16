@@ -86,6 +86,7 @@ class Inscripciones:
         self.lblNombres.place(anchor="nw", x=30, y=140)
         #Entry Alumno
         self.nombres = ttk.Entry(self.frm_1, name="nombres")
+        self.nombres.configure(state="readonly")
         self.nombres.place(anchor="nw", width=200, x=110, y=140)
 
         #Label Apellidos
@@ -94,6 +95,7 @@ class Inscripciones:
         self.lblApellidos.place(anchor="nw", x=400, y=140)
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
+        self.apellidos.configure(state="readonly")
         self.apellidos.place(anchor="nw", width=200, x=485, y=140)
 
         #Label Id Curso
@@ -422,7 +424,7 @@ class Inscripciones:
             self.btnCancelar.configure(state= tk.NORMAL)
             self.btnEditar.configure(state= tk.DISABLED)
             self.cmbx_Id_Curso.configure(state= tk.NORMAL)
-            self.curso.configure(state= tk.NORMAL)
+            self.curso.configure(state= "readonly")
             self.fecha.configure(state=tk.NORMAL)
         
     
