@@ -8,7 +8,7 @@ from pathlib import Path
 
 PATH = str((Path(__file__).resolve()).parent)
 ICON=r"/imagen/ed.ico"
-BD= r"/BD/database.db"
+BD= r"/BD/Inscripciones.db"
 class Inscripciones:
     def __init__(self, master=None):
         # Ventana principal
@@ -495,6 +495,12 @@ class Inscripciones:
             modo_No_Editar()
             return actualizar("cancelar:activar")
 
+        def mouse_move(event):
+            y= event.y
+            if y < 26:
+                return "break" 
+        
+
         self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
         self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", insertarId) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".
         self.cmbx_Id_Curso.configure(values = valsCmbxCur) #Se colocan todas las opciones del combobox(los id_cursos).
@@ -507,6 +513,7 @@ class Inscripciones:
         self.cmbx_Id_Curso.bind("<Return>", insertarIdCurso) # Al presionar enter en el comobobox de cursos
         self.curso.bind("<Return>", insertarCurso) # Al presionar enter en cursos
         self.btnCancelar.configure(command = botonCancelar)
+        self.tView.bind("<Button-1 >", mouse_move)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
 
     def run(self):
         self.mainwindow.mainloop()
@@ -525,3 +532,5 @@ valsCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos").fetchall() #Opcion
 if __name__ == "__main__":
     app = Inscripciones()
     app.run()
+
+
