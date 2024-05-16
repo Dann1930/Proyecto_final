@@ -8,8 +8,15 @@ from pathlib import Path
 
 PATH = str((Path(__file__).resolve()).parent)
 ICON=r"/imagen/ed.ico"
-BD= r"/BD/database.db"
+BD= r"/BD/Inscripciones.db"
 class Inscripciones:
+    def centrar(self):
+        self.win.update_idletasks() #actualiza las dimensiones de la ventana
+        ancho = self.win.winfo_width() 
+        alto = self.win.winfo_height()
+        x = (self.win.winfo_screenwidth() // 2) - (ancho // 2) #calcula la posicion de x
+        y = (self.win.winfo_screenheight() // 2) - (alto // 2) #calcula la posicion de y
+        self.win.geometry('{}x{}+{}+{}'.format(ancho, alto, x, y)) #ajusta la geometria de la ventana
     def __init__(self, master=None):
         # Ventana principal
         self.db_name = PATH + BD   
@@ -20,6 +27,7 @@ class Inscripciones:
         self.win.resizable(False, False)
         self.win.title("Inscripciones de Materias y Cursos")
         # Crea los frames
+        self.centrar()
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#2B4D6F", height=600, width=800)
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
@@ -145,7 +153,6 @@ class Inscripciones:
         ''' Treeview de la Aplicación'''
         #Treeview
         self.tView = ttk.Treeview(self.frm_1, style="estilo.Treeview") 
-        self.tView.configure()
         #Columnas del Treeview
         self.tView["columns"]=("descripcion","horas","creditos","aula")
         self.tView.column ("#0", anchor="w", stretch=True,width=10)
@@ -262,7 +269,7 @@ class Inscripciones:
                         Telefono Celular:\t{} \n \
                         Telefono Fijo:\t{} \n \
                         Ciudad:\t \t{} \n \
-                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11 {bold}",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
+                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
                 tk.Button(info, text = "Ok", command = info.destroy).pack(pady=10) #Cierra la ventana
 
         
@@ -297,6 +304,7 @@ class Inscripciones:
                 n= max_num[0]
                 n=n+1 
             return n
+        
         def getCurso():
             curso = self.curso.get()
             if curso == "":
@@ -403,7 +411,7 @@ class Inscripciones:
                 valsTreeview = ()
                 self.tView.insert(parent = "",index = tk.END, text = valsTreeview, values = valsTreeview)
             else: #Si el alumno cambia, o se modifico la base de datos, se actualiza el treeview
-                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso , Cursos.Num_Horas, Cursos.Creditos, Cursos.Aula FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
+                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso ,Info_Cursos.Num_Horas,Info_Cursos.Creditos,Info_Cursos.Aula FROM ((Inscritos INNER JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso) INNER JOIN Info_Cursos ON Inscritos.Código_Curso = Info_Cursos.Código_Curso) WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
                 
                 for Curso in range(len(valsTreeview)):
                     self.tView.insert(parent = "",index = tk.END, text = valsTreeview[Curso][0], values = valsTreeview[Curso][1:]) #Modificar si hay mas columnas a agregar(solo admite 2)
@@ -497,6 +505,12 @@ class Inscripciones:
             modo_No_Editar()
             return actualizar("cancelar:activar")
 
+        def mouse_move(event): # lee las cordenadas del mouse 
+            y= event.y
+            if y < 26:
+                return "break" 
+        
+
         self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
         self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", insertarId) #Al seleccionar una opción del combobox, lo que este dentro del combobox pasa como argumento a "Actualizar".
         self.cmbx_Id_Curso.configure(values = valsCmbxCur) #Se colocan todas las opciones del combobox(los id_cursos).
@@ -509,6 +523,7 @@ class Inscripciones:
         self.cmbx_Id_Curso.bind("<Return>", insertarIdCurso) # Al presionar enter en el comobobox de cursos
         self.curso.bind("<Return>", insertarCurso) # Al presionar enter en cursos
         self.btnCancelar.configure(command = botonCancelar)
+        self.tView.bind("<Button-1 >", mouse_move)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
 
     def run(self):
         self.mainwindow.mainloop()
@@ -527,3 +542,5 @@ valsCmbxCur = cur.execute("SELECT Código_Curso FROM Cursos").fetchall() #Opcion
 if __name__ == "__main__":
     app = Inscripciones()
     app.run()
+
+
