@@ -10,6 +10,13 @@ PATH = str((Path(__file__).resolve()).parent)
 ICON=r"/imagen/ed.ico"
 BD= r"/BD/Inscripciones.db"
 class Inscripciones:
+    def centrar(self):
+        self.win.update_idletasks() #actualiza las dimensiones de la ventana
+        ancho = self.win.winfo_width() 
+        alto = self.win.winfo_height()
+        x = (self.win.winfo_screenwidth() // 2) - (ancho // 2) #calcula la posicion de x
+        y = (self.win.winfo_screenheight() // 2) - (alto // 2) #calcula la posicion de y
+        self.win.geometry('{}x{}+{}+{}'.format(ancho, alto, x, y)) #ajusta la geometria de la ventana
     def __init__(self, master=None):
         # Ventana principal
         self.db_name = PATH + BD   
@@ -20,6 +27,7 @@ class Inscripciones:
         self.win.resizable(False, False)
         self.win.title("Inscripciones de Materias y Cursos")
         # Crea los frames
+        self.centrar()
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#2B4D6F", height=600, width=800)
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
