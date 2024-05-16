@@ -420,12 +420,15 @@ class Inscripciones:
         
 
         def modo_editar():
-            self.btnGuardar.configure(state= tk.NORMAL)
-            self.btnCancelar.configure(state= tk.NORMAL)
-            self.btnEditar.configure(state= tk.DISABLED)
-            self.cmbx_Id_Curso.configure(state= tk.NORMAL)
-            self.curso.configure(state= "readonly")
-            self.fecha.configure(state=tk.NORMAL)
+            if getcmbx()=="vacio":
+                pass
+            else:
+                self.btnGuardar.configure(state= tk.NORMAL)
+                self.btnCancelar.configure(state= tk.NORMAL)
+                self.btnEditar.configure(state= tk.DISABLED)
+                self.cmbx_Id_Curso.configure(state= tk.NORMAL)
+                self.curso.configure(state= "readonly")
+                self.fecha.configure(state=tk.NORMAL)
         
     
         def modo_No_Editar():
