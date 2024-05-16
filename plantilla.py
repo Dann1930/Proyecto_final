@@ -32,7 +32,7 @@ class Inscripciones:
         self.lblNoInscripcion.place(anchor="nw", x=670, y=20)
         #Entry No. Inscripción
         self.num_Inscripcion = ttk.Entry(self.frm_1, name="num_inscripcion")
-        self.num_Inscripcion.configure(justify="right")
+        self.num_Inscripcion.configure(justify="right", state="readonly")
         self.num_Inscripcion.place(anchor="nw", width=100, x=672, y=50)
         #Funcion barras de fecha
         def fecha_barras(action, fecha, car): #agrega los slash a la fecha 
@@ -78,6 +78,7 @@ class Inscripciones:
         self.lblNombres.place(anchor="nw", x=30, y=140)
         #Entry Alumno
         self.nombres = ttk.Entry(self.frm_1, name="nombres")
+        self.nombres.configure(state="readonly")
         self.nombres.place(anchor="nw", width=200, x=110, y=140)
 
         #Label Apellidos
@@ -86,6 +87,7 @@ class Inscripciones:
         self.lblApellidos.place(anchor="nw", x=400, y=140)
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
+        self.apellidos.configure(state="readonly")
         self.apellidos.place(anchor="nw", width=200, x=485, y=140)
 
         #Label Id Curso
@@ -414,7 +416,7 @@ class Inscripciones:
             self.btnCancelar.configure(state= tk.NORMAL)
             self.btnEditar.configure(state= tk.DISABLED)
             self.cmbx_Id_Curso.configure(state= tk.NORMAL)
-            self.curso.configure(state= tk.NORMAL)
+            self.curso.configure(state= "readonly")
             self.fecha.configure(state=tk.NORMAL)
         
     
