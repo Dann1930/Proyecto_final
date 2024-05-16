@@ -143,7 +143,6 @@ class Inscripciones:
         ''' Treeview de la Aplicación'''
         #Treeview
         self.tView = ttk.Treeview(self.frm_1, style="estilo.Treeview") 
-        self.tView.configure()
         #Columnas del Treeview
         self.tView["columns"]=("descripcion","horas","creditos","aula")
         self.tView.column ("#0", anchor="w", stretch=True,width=10)
@@ -260,7 +259,7 @@ class Inscripciones:
                         Telefono Celular:\t{} \n \
                         Telefono Fijo:\t{} \n \
                         Ciudad:\t \t{} \n \
-                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11 {bold}",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
+                        Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
                 tk.Button(info, text = "Ok", command = info.destroy).pack(pady=10) #Cierra la ventana
 
         
@@ -295,6 +294,7 @@ class Inscripciones:
                 n= max_num[0]
                 n=n+1 
             return n
+        
         def getCurso():
             curso = self.curso.get()
             if curso == "":
@@ -401,7 +401,7 @@ class Inscripciones:
                 valsTreeview = ()
                 self.tView.insert(parent = "",index = tk.END, text = valsTreeview, values = valsTreeview)
             else: #Si el alumno cambia, o se modifico la base de datos, se actualiza el treeview
-                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso , Cursos.Num_Horas, Cursos.Creditos, Cursos.Aula FROM (Alumnos INNER JOIN Inscritos ON Alumnos.Id_Alumno = Inscritos.Id_Alumno) INNER JOIN Cursos ON Cursos.Código_Curso = Inscritos.Código_Curso WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
+                valsTreeview = cur.execute("SELECT Inscritos.Código_Curso, Cursos.Descrip_Curso ,Info_Cursos.Num_Horas,Info_Cursos.Creditos,Info_Cursos.Aula FROM ((Inscritos INNER JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso) INNER JOIN Info_Cursos ON Inscritos.Código_Curso = Info_Cursos.Código_Curso) WHERE Inscritos.Id_Alumno = \"{}\"".format(cmbx)).fetchall()
                 
                 for Curso in range(len(valsTreeview)):
                     self.tView.insert(parent = "",index = tk.END, text = valsTreeview[Curso][0], values = valsTreeview[Curso][1:]) #Modificar si hay mas columnas a agregar(solo admite 2)
@@ -495,7 +495,7 @@ class Inscripciones:
             modo_No_Editar()
             return actualizar("cancelar:activar")
 
-        def mouse_move(event):
+        def mouse_move(event): # lee las cordenadas del mouse 
             y= event.y
             if y < 26:
                 return "break" 
