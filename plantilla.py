@@ -1,6 +1,7 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
 import tkinter as tk
+from tkinter import Toplevel
 import tkinter.ttk as ttk
 import sqlite3
 import tkinter.messagebox as msgb
