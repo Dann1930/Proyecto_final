@@ -6,6 +6,7 @@ import tkinter.ttk as ttk
 import sqlite3
 import tkinter.messagebox as msgb
 from pathlib import Path
+from datetime import datetime
 
 PATH = str((Path(__file__).resolve()).parent)
 ICON=r"/imagen/ed.ico"
@@ -44,31 +45,59 @@ class Inscripciones:
         self.num_Inscripcion.configure(justify="right",state="readonly")
         self.num_Inscripcion.place(anchor="nw", width=100, x=672, y=50)
         #Funcion barras de fecha
-        def fecha_barras(action, fecha, car): #agrega los slash a la fecha 
-            if action == '0':
-                if car == '/':
-                    return False #no permite el ingreso de slash a mano propia
-            if action == '1':
-                if len(fecha) > 10:
-                    return False #la fecha no pasa de 10 caracteres
-                elif car.isalpha():
-                    return False #no permite valores "str" al digitar los numeros
-                elif car == '/':
-                    return False
-                elif len(fecha) == 3 or len(fecha) == 6:
-                    if fecha.count('/') < 2: #agrega los slash
-                        arreglo = self.fecha.get()
-                        arreglo += '/'
-                        self.fecha.delete(0,tk.END)
-                        self.fecha.insert(0,arreglo)
-                return True
+        self.lenPrevio = 0
+        self.varfecha = tk.StringVar() #variable de control para el texto de entrada
+        
+        def funciones(name, index, mode): #funciones mientras se escrible la fecha
+            limitar()
+            slash()
+            espacios()
+            validar()
+            conversion()
+            
+        def limitar(): #limita la cantidad de valores a 10
+            valor = self.varfecha.get()
+            if len(valor) > 10: 
+                msgb.showwarning("Advertencia", "La fecha no puede contar con mas de 10 numeros, se eliminará el exceso")
+                self.varfecha.set(valor[0:10])
+                
+        def slash(): #pone los slash sin necesidad del espacio
+            fecha = self.varfecha.get()
+            lenActual = len(fecha)
+            if (lenActual > self.lenPrevio):
+                if(lenActual == 2 or lenActual == 5) and not fecha.endswith("/"):
+                    fecha += "/"
+                    self.fecha.delete(0,tk.END)
+                    self.fecha.insert(0,fecha)
+            self.lenPrevio = lenActual 
+        
+        def espacios(): # Elimina los espacios que se digiten en la fecha
+            fecha = self.varfecha.get()
+            if " " in fecha:
+                self.varfecha.set(fecha.replace(" ", ""))
+        def validar():
+            fecha = self.varfecha.get()
+            try:
+                datetime.strptime(fecha, "%d/%m/%Y")
+            except ValueError:
+                return False
+            return True
+        def conversion(): #permite que la base de datos lo lea
+            fecha = self.fecha.get()
+            partes = fecha.split("/")
+            dia, mes, año = partes
+            if validar():
+                dia, mes, año = int(dia), int(mes), int(año)
+                return f"{año:04d}-{mes:02d}-{dia:02d}"	               
+        
+        self.varfecha.trace_add("write", funciones) #aplica todas las funciones anteriores en el entry
 
         #Label Fecha
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
         self.lblFecha.configure(background="#2B4D6F", text='Fecha:',foreground="white")
         self.lblFecha.place(anchor="nw", x=630, y=85)
         #Entry Fecha
-        self.fecha = ttk.Entry(self.frm_1, name="fecha", validate = "key", validatecommand=(self.win.register(fecha_barras),"%d","%P", "%S")) #valida la funcion anterior
+        self.fecha = ttk.Entry(self.frm_1, name="fecha", validate = "key", textvariable=self.varfecha) #usa todas las funciones mientras se digitan los valores
         self.fecha.configure(justify="center",state= tk.DISABLED)
         self.fecha.place(anchor="nw", width=90, x=680, y=85)
         #self.fecha.insert(0,"DD/MM/AAAA")
