@@ -500,6 +500,10 @@ class Inscripciones:
                     mensajeConfirmacion(2)
 
         def botonCancelar(): #bloque de codigo que se ejecuta si acciona el boton
+            self.curso.configure(state=tk.NORMAL)
+            self.nombres.configure(state=tk.NORMAL)
+            self.apellidos.configure(state=tk.NORMAL)
+            self.num_Inscripcion.configure(state=tk.NORMAL)
             self.cmbx_Id_Curso.delete(0,tk.END)
             self.curso.delete(0,tk.END)
             modo_No_Editar()
