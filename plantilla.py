@@ -479,29 +479,60 @@ class Inscripciones:
                     mensajeConfirmacion(2)
                 modo_No_Editar()
 
+        def centrarVentana(ven):
+            ven.update_idletasks()
+            ancho = ven.winfo_width()
+            alto = ven.winfo_height()
+            x = (ven.winfo_screenwidth() // 2) - (ancho // 2)
+            y = (ven.winfo_screenheight() // 2) - (alto // 2)
+            ven.geometry(f'{ancho}x{alto}+{x}+{y}')
+        
         def eliminarLinea():
             cmbx = getcmbx()
             if cmbx == "vacio": #Si no hay alumno seleccionado(y por ende no hay nada en el treeview), se retorna error 1
                 return mensajeError(1)
             elif SeleccionVacia(): #Si hay alumno pero no se ha seleccionado algun registro, se retorna error 3
                 return mensajeError(3)
+            else: 
+                ventana = Toplevel(self.win) #crea ventana
+                ventana.title("Eliminar registros") #titulo
+                ventana.geometry("250x100") #tamaño     
+                ventana.resizable(False, False) #no se puede modificar el tamaño
+                centrarVentana(ventana)
+                lblElimina=tk.Label(ventana, background="#E8EDED",  anchor="w", justify="left", text= "Por favor, seleccione una de las siguientes\n opciones:") #texto interior
+                lblElimina.place(x=10, y=10) #posicion texto
+                btnEliminarUno= tk.Button(ventana,  background='#B1DAD3', text="Eliminar Seleccionado", command=EliminarUno) #boton eliminar uno
+                btnEliminarUno.place(x=10, y=55) #posicion eliminar uno
+                btnEliminarTodos= tk.Button(ventana, background='#B1DAD3', text="Eliminar todos", command=EliminarTodos) #boton eliminar todos
+                btnEliminarTodos.place(x=150, y=55)  #posicion eliminar todos
+                
+        def EliminarUno(*args):
+            cmbx = getcmbx()
+            cantSeleccion = len(seleccionLinea()) #Por medio del metodo seleccionLinea, tomamos la cantidad de registros seleccionados en el treview
+            alumno = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone() #Se crea una tupla para guardar los nombres y apellidos del alumno
+            textCon = "¿Esta segur@ de eliminar las siguientes (" + str(cantSeleccion) + ") inscripciones de " + str(alumno[0]) + " " + str(alumno[1]) + "?" #Se crea un String el cual almacena el mensaje a monstrar en la ventana de confirmación
+            if ventanaConfirmacion(textCon) == 1: #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si, además ingresamos el String textCon como parametro
+                for linea in seleccionLinea(): #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
+                    eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, linea[0]))         
+                conexion.commit() #Confirma la eliminación.
+                actualizar("call") #Refresca el treeview.
+                mensajeConfirmacion(1)
             else:
-                #Se crea una tupla para guardar los nombres y apellidos del alumno
-                alumno = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE id_Alumno = \"{}\"".format(cmbx)).fetchone()
-                #Por medio del metodo seleccionLinea, tomamos la cantidad de registros seleccionados en el treview
-                cantSeleccion = len(seleccionLinea())  
-                #Se crea un String el cual almacena el mensaje a monstrar en la ventana de confirmación
-                textCon = "¿Esta segur@ de eliminar las siguientes (" + str(cantSeleccion) + ") inscripciones de " + str(alumno[0]) + " " + str(alumno[1]) + "?"
-                #Confirmación previa de realización de cambios, se entiende 1 como mensaje de confirmación Si, además ingresamos el String textCon como parametro
-                if ventanaConfirmacion(textCon) == 1:
-                    #Se elimina el el registro donde coincida el id_alumno y el codigo curso(de la seleccion).
-                    for linea in seleccionLinea():
-                        eliminar = cur.execute("DELETE FROM Inscritos WHERE Id_Alumno = \"{}\" AND Código_Curso = \"{}\" ".format(cmbx, linea[0]))
-                    conexion.commit() #Confirma la eliminación.
-                    actualizar("call") #Refresca el treeview.
-                    mensajeConfirmacion(1)
-                else:
-                    mensajeConfirmacion(2)
+                mensajeConfirmacion(2)
+        def EliminarTodos(*args):
+            cmbx = getcmbx()
+            alumno = cur.execute("SELECT Nombres, Apellidos FROM Alumnos WHERE id_Alumno = ?", (cmbx,)).fetchone()
+            conexion.commit()
+            textCon = "¿Esta segur@ de eliminar todas las inscripciones de " + str(alumno[0]) + " " + str(alumno[1]) + "?"
+            if ventanaConfirmacion(textCon) == 1:               
+                cur.execute("DELETE FROM Inscritos WHERE id_Alumno = ?", (cmbx,)) # Eliminar registros de la base de datos
+                conexion.commit()                           
+                for item in self.tView.get_children(): # Eliminar los items del Treeview
+                    self.tView.delete(item)
+                conexion.commit()  
+                mensajeConfirmacion(1)
+            else:
+                mensajeConfirmacion(2)
 
         def botonCancelar(): #bloque de codigo que se ejecuta si acciona el boton
             self.curso.configure(state=tk.NORMAL)
