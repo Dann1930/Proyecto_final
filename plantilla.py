@@ -40,7 +40,7 @@ class Inscripciones:
         self.lblNoInscripcion.place(anchor="nw", x=670, y=20)
         #Entry No. Inscripción
         self.num_Inscripcion = ttk.Entry(self.frm_1, name="num_inscripcion")
-        self.num_Inscripcion.configure(justify="right", state="readonly")
+        self.num_Inscripcion.configure(justify="right",state="readonly")
         self.num_Inscripcion.place(anchor="nw", width=100, x=672, y=50)
         #Funcion barras de fecha
         def fecha_barras(action, fecha, car): #agrega los slash a la fecha 
@@ -420,12 +420,15 @@ class Inscripciones:
         
 
         def modo_editar():
-            self.btnGuardar.configure(state= tk.NORMAL)
-            self.btnCancelar.configure(state= tk.NORMAL)
-            self.btnEditar.configure(state= tk.DISABLED)
-            self.cmbx_Id_Curso.configure(state= tk.NORMAL)
-            self.curso.configure(state= "readonly")
-            self.fecha.configure(state=tk.NORMAL)
+            if getcmbx()=="vacio":
+                pass
+            else:
+                self.btnGuardar.configure(state= tk.NORMAL)
+                self.btnCancelar.configure(state= tk.NORMAL)
+                self.btnEditar.configure(state= tk.DISABLED)
+                self.cmbx_Id_Curso.configure(state= tk.NORMAL)
+                self.curso.configure(state= "readonly")
+                self.fecha.configure(state=tk.NORMAL)
         
     
         def modo_No_Editar():
