@@ -209,6 +209,12 @@ class Inscripciones:
         # Main widget
         self.mainwindow = self.win
         def fechaValida(fecha):
+            for caracter in fecha:
+                 if caracter.isnumeric()== False:
+                     if caracter == "/":
+                         pass
+                     else:
+                         return False
              componentes = fecha.strip().split("/") #Elimina espacios y crea una lista separando por slash.
              if len(fecha)==10 and len(componentes[0]) == 2 and len(componentes[1]) == 2 and len(componentes[2]) == 4: #Formato valido "XX / XX / XXXX"
               pass
@@ -458,7 +464,7 @@ class Inscripciones:
                 self.btnCancelar.configure(state= tk.NORMAL)
                 self.btnEditar.configure(state= tk.DISABLED)
                 self.cmbx_Id_Curso.configure(state= tk.NORMAL)
-                self.curso.configure(state= "readonly")
+                self.curso.configure(state= tk.NORMAL)
                 self.fecha.configure(state=tk.NORMAL)
         
     
@@ -470,6 +476,8 @@ class Inscripciones:
             self.cmbx_Id_Curso.configure(state= tk.DISABLED)
             self.curso.configure(state= tk.DISABLED)
             self.fecha.configure(state=tk.DISABLED)
+            self.nombres.configure(state=tk.DISABLED)
+            self.apellidos.configure(state=tk.DISABLED)
 
         def guardarInscripción(): 
             if getcmbx() == "vacio": #Si en la seleccion no hay nada
