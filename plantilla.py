@@ -270,6 +270,7 @@ class Inscripciones:
                         Telefono Fijo:\t{} \n \
                         Ciudad:\t \t{} \n \
                         Departamento:\t{} \n".format(datosAlumno[2],datosAlumno[3],datosAlumno[0],carrera[1],datosAlumno[4],datosAlumno[5],datosAlumno[6],datosAlumno[7],datosAlumno[8],datosAlumno[9]),justify="left",anchor= "w" , font="{TkDefaultFont} 11",background="#2B4D6F",foreground="white").pack(ipadx=20, pady=10)
+                centrarVentana(info)
                 tk.Button(info, text = "Ok", command = info.destroy).pack(pady=10) #Cierra la ventana
 
         
