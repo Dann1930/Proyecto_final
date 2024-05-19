@@ -511,19 +511,19 @@ class Inscripciones:
              bloqueo_Espacio=getFecha().strip()
              self.fecha.delete(0,100)
              self.fecha.insert(0,bloqueo_Espacio)
-             
-        def barras(fecha):
-            n=getFecha()
-            h= len(n)
-            if h == 2:
-             self.fecha.insert(h,"/")
-            elif h == 5:
-             self.fecha.insert(h,"/")
-            elif h > 9:
+            else:
+             n=getFecha()
+             h= len(n)
+             if h == 2:
+              self.fecha.insert(h,"/")
+             elif h == 5:
+              self.fecha.insert(h,"/")
+             elif h > 10:
                  self.fecha.delete(0,100)
                  mensajeError(11)      
-            else:
-             pass 
+             else:
+              pass
+             
 
         '''Acciónes'''
             
@@ -635,7 +635,7 @@ class Inscripciones:
         self.cmbx_Curso.bind("<Return>", insertarCurso) # Al presionar enter en el comobobox de cursos
         self.curso.bind("<Return>", insertarIdCurso) # Al presionar enter en cursos
         self.tView.bind("<Button-1 >", mouseMove)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
-        self.fecha.bind("<KeyPress>", barras)
+        
         self.fecha.bind("<KeyRelease>",eliminar_espacio)
         
         
