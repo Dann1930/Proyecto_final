@@ -499,32 +499,32 @@ class Inscripciones:
             self.curso.configure(state= tk.DISABLED)
             self.fecha.configure(state=tk.DISABLED)
             
-            
 
         def mouseMove(event): # lee las cordenadas del mouse 
             y= event.y
             if y < 26:
                 return "break" 
             
-        def eliminar_espacio(event):
+        def espaciosDiagonalesF(event): #Revisa la fecha cada vez que se presiona una tecla
             if event.char ==" ":
              bloqueo_Espacio=getFecha().strip()
              self.fecha.delete(0,100)
              self.fecha.insert(0,bloqueo_Espacio)
             else:
-             n=getFecha()
-             h= len(n)
-             if h == 2:
-              self.fecha.insert(h,"/")
-             elif h == 5:
-              self.fecha.insert(h,"/")
-             elif h > 10:
+             caracteres_Fecha= len(getFecha())
+             if caracteres_Fecha == 2:
+              self.fecha.insert(caracteres_Fecha,"/")
+             elif caracteres_Fecha == 5:
+              self.fecha.insert(caracteres_Fecha,"/")
+             elif caracteres_Fecha > 10:
                  self.fecha.delete(0,100)
                  mensajeError(11)      
              else:
               pass
-             
 
+        def borrar(event):
+            self.fecha.delete(len(getFecha()),100)
+             
         '''Acciónes'''
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
@@ -635,9 +635,9 @@ class Inscripciones:
         self.cmbx_Curso.bind("<Return>", insertarCurso) # Al presionar enter en el comobobox de cursos
         self.curso.bind("<Return>", insertarIdCurso) # Al presionar enter en cursos
         self.tView.bind("<Button-1 >", mouseMove)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
-        
-        self.fecha.bind("<KeyRelease>",eliminar_espacio)
-        
+        self.fecha.bind("<KeyRelease>",espaciosDiagonalesF)
+        self.fecha.bind("<KeyPress>",espaciosDiagonalesF)
+        self.fecha.bind("<BackSpace>",borrar)
         
         
 
