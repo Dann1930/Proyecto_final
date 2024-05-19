@@ -56,8 +56,8 @@ class Inscripciones:
         self.fecha = ttk.Entry(self.frm_1, name="fecha", validate = "key", textvariable=self.varfecha) #usa todas las funciones mientras se digitan los valores
         self.fecha.configure(justify="center",state= tk.DISABLED)
         self.fecha.place(anchor="nw", width=90, x=680, y=85)
-        #self.fecha.insert(0,"DD/MM/AAAA")
-
+        
+        
         #Label Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#2B4D6F", text='Id Alumno:',foreground="white")
@@ -167,6 +167,7 @@ class Inscripciones:
 
         ''' Validación de la fecha'''
         def fechaValida(fecha):
+            
              for caracter in fecha:
                  if caracter.isnumeric()== False:
                      if caracter == "/":
@@ -220,7 +221,7 @@ class Inscripciones:
             if codigo == 1: 
                 msgb.showerror(message="Seleccione un alumno.")
             elif codigo == 2: 
-                msgb.showerror(message="La fecha no es valida.")
+                msgb.showerror(message="La fecha no es valida, recuerde que el formato es DD/MM/AAAA.")
             elif codigo == 3:
                 msgb.showerror(message="Seleccióne un registro.")
             elif codigo == 4:
@@ -237,6 +238,8 @@ class Inscripciones:
                 msgb.showerror(message="El curso y el id del curso no concuerdan, por favor revise la entrada")
             elif codigo == 10:
                 msgb.showerror(message="El campo de fecha esta vacia")
+            elif codigo == 11:
+                msgb.showerror(message="Borre el espacio,los espacios no estan permitidos recuerde que el formato es DD/MM/AAAA ")
             else: 
                 msgb.showerror(message="Selección vacia.")
         
@@ -472,6 +475,7 @@ class Inscripciones:
             self.nombres.configure(state=tk.NORMAL)
             self.apellidos.configure(state=tk.NORMAL)
             self.num_Inscripcion.configure(state=tk.NORMAL)
+            
 
             modo_No_Editar()
             return actualizar("cancelar:activar")
@@ -488,6 +492,7 @@ class Inscripciones:
                 self.cmbx_Curso.configure(state= tk.NORMAL)
                 self.curso.configure(state= tk.NORMAL)
                 self.fecha.configure(state=tk.NORMAL)
+                
         
     
         def modo_No_Editar(): #Bloquea los botones y campos que editan la base de datos.
@@ -497,12 +502,19 @@ class Inscripciones:
             self.cmbx_Curso.configure(state= tk.DISABLED)
             self.curso.configure(state= tk.DISABLED)
             self.fecha.configure(state=tk.DISABLED)
+            
 
-        def mouse_move(event): # lee las cordenadas del mouse 
+        def mouseMove(event): # lee las cordenadas del mouse 
             y= event.y
             if y < 26:
                 return "break" 
             
+        def eliminar_espacio(fecha):
+            bloqueo_Espacio=getFecha().strip()
+            self.fecha.delete(0,100)
+            self.fecha.insert(0,bloqueo_Espacio)
+            mensajeError(11)
+           
         '''Acciónes'''
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
@@ -594,6 +606,11 @@ class Inscripciones:
             y = (ven.winfo_screenheight() // 2) - (alto // 2)
             ven.geometry(f'{ancho}x{alto}+{x}+{y}')
 
+        
+
+
+
+
         '''Binds y acciones de los botones'''
 
         self.cmbx_Id_Alumno.configure(values = valsCmbxAl) #Se colocan todas las opciones del combobox(los id_alumnos).
@@ -607,7 +624,9 @@ class Inscripciones:
         self.cmbx_Id_Alumno.bind("<Return>", insertarId) # Al presionar enter en el comobobox
         self.cmbx_Curso.bind("<Return>", insertarCurso) # Al presionar enter en el comobobox de cursos
         self.curso.bind("<Return>", insertarIdCurso) # Al presionar enter en cursos
-        self.tView.bind("<Button-1 >", mouse_move)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
+        self.tView.bind("<Button-1 >", mouseMove)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
+        self.fecha.bind("<space>",eliminar_espacio)
+        
 
     def run(self):
         self.mainwindow.mainloop()
