@@ -306,13 +306,15 @@ class Inscripciones:
         def getinscripcion(): #Da el numero de inscripcion 
             busqueda = cur.execute( "SELECT No_Inscripción FROM Inscritos WHERE Id_Alumno =  \"{}\"".format(getcmbx())).fetchall() #Busca el numero de inscripcion si existe
             Encontrar = cur.execute("SELECT No_Inscripción FROM Inscritos ").fetchall() # Da la lista completa de los numeros de inscripcion
-            max_num = max(Encontrar) # encuentra el valor mas alto de los numeros de inscripcion 
             if busqueda:
                 z= busqueda[0] # Da la lista del diccionaro
                 n=z[0]# Da valor de la lista
-            else: 
-                n= max_num[0]
-                n=n+1 
+            elif Encontrar: #Si no hay ninguna inscripcion no salta y toma el valor como 1° inscripcion
+                max_num = max(Encontrar) # encuentra el valor mas alto de los numeros de inscripcion
+                n= max_num[0] 
+                n=n+1            
+            else:
+                n=1
             return n
         
         def getCurso():
@@ -550,8 +552,11 @@ class Inscripciones:
                 self.curso.configure(textvariable = self.cursosvar)
 
             busqueda = cur.execute( "SELECT No_Inscripción FROM Inscritos WHERE Id_Alumno =  \"{}\"".format(cmbx)).fetchone()
-            self.inscripcionvar = tk.StringVar(value = busqueda[0])
-            self.num_Inscripcion.configure(textvariable = self.inscripcionvar)
+            if busqueda is None:   #Comprueba si no hay ninguna inscripción no actuliza el treeview
+                pass
+            else:
+                self.inscripcionvar = tk.StringVar(value = busqueda[0])
+                self.num_Inscripcion.configure(textvariable = self.inscripcionvar)
             if call[0] == "cancelar": #Si el llamado es "Cancelar", Se borran todos los campos
                     self.cmbx_Id_Alumno.delete(0,100)
                     self.cmbx_Curso.delete(0,100)
