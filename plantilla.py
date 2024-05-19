@@ -56,8 +56,6 @@ class Inscripciones:
         self.fecha = ttk.Entry(self.frm_1, name="fecha", validate = "key", textvariable=self.varfecha) #usa todas las funciones mientras se digitan los valores
         self.fecha.configure(justify="center",state= tk.DISABLED)
         self.fecha.place(anchor="nw", width=90, x=680, y=85)
-        
-        
         #Label Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#2B4D6F", text='Id Alumno:',foreground="white")
@@ -239,7 +237,7 @@ class Inscripciones:
             elif codigo == 10:
                 msgb.showerror(message="El campo de fecha esta vacia")
             elif codigo == 11:
-                msgb.showerror(message="Borre el espacio,los espacios no estan permitidos recuerde que el formato es DD/MM/AAAA ")
+                msgb.showerror(message="Ha llegado al máximo de caracteres")
             else: 
                 msgb.showerror(message="Selección vacia.")
         
@@ -475,8 +473,7 @@ class Inscripciones:
             self.nombres.configure(state=tk.NORMAL)
             self.apellidos.configure(state=tk.NORMAL)
             self.num_Inscripcion.configure(state=tk.NORMAL)
-            
-
+            self.fecha.delete(0,100)
             modo_No_Editar()
             return actualizar("cancelar:activar")
         
@@ -492,7 +489,6 @@ class Inscripciones:
                 self.cmbx_Curso.configure(state= tk.NORMAL)
                 self.curso.configure(state= tk.NORMAL)
                 self.fecha.configure(state=tk.NORMAL)
-                
         
     
         def modo_No_Editar(): #Bloquea los botones y campos que editan la base de datos.
@@ -503,18 +499,32 @@ class Inscripciones:
             self.curso.configure(state= tk.DISABLED)
             self.fecha.configure(state=tk.DISABLED)
             
+            
 
         def mouseMove(event): # lee las cordenadas del mouse 
             y= event.y
             if y < 26:
                 return "break" 
             
-        def eliminar_espacio(fecha):
-            bloqueo_Espacio=getFecha().strip()
-            self.fecha.delete(0,100)
-            self.fecha.insert(0,bloqueo_Espacio)
-            mensajeError(11)
-           
+        def eliminar_espacio(event):
+            if event.char ==" ":
+             bloqueo_Espacio=getFecha().strip()
+             self.fecha.delete(0,100)
+             self.fecha.insert(0,bloqueo_Espacio)
+             
+        def barras(fecha):
+            n=getFecha()
+            h= len(n)
+            if h == 2:
+             self.fecha.insert(h,"/")
+            elif h == 5:
+             self.fecha.insert(h,"/")
+            elif h > 9:
+                 self.fecha.delete(0,100)
+                 mensajeError(11)      
+            else:
+             pass 
+
         '''Acciónes'''
             
         def actualizar(call): #El argumento no se utiliza, pero por ser llamado por un bind, se le coloca argumento.
@@ -576,7 +586,6 @@ class Inscripciones:
                     self.cmbx_Id_Alumno.delete(0,100)
                     self.cmbx_Curso.delete(0,100)
                     self.curso.delete(0,100)
-                    self.fecha.delete(0,100)
                     self.nombres.delete(0,100)
                     self.apellidos.delete(0,100)
                     self.nombres.delete(0,100)
@@ -584,6 +593,7 @@ class Inscripciones:
                     self.apellidos.configure(state="readonly")
                     self.nombres.configure(state="readonly")
                     self.num_Inscripcion.configure(state="readonly")
+                    self.fecha.delete(0,100)
 
 
             #TreeView
@@ -625,7 +635,10 @@ class Inscripciones:
         self.cmbx_Curso.bind("<Return>", insertarCurso) # Al presionar enter en el comobobox de cursos
         self.curso.bind("<Return>", insertarIdCurso) # Al presionar enter en cursos
         self.tView.bind("<Button-1 >", mouseMove)# desactiva la tabla para que el usuario no pueda cambiar el tamaño
-        self.fecha.bind("<space>",eliminar_espacio)
+        self.fecha.bind("<KeyPress>", barras)
+        self.fecha.bind("<KeyRelease>",eliminar_espacio)
+        
+        
         
 
     def run(self):
